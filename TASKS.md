@@ -10,14 +10,14 @@
 
 ## Milestone 1: Core Architecture, Database & Business Logic Engine
 *Goal: Complete, tested, offline-first data layer, multi-profile isolation, and dose state machine.*
-- [ ] Flutter project setup & dependencies (Drift, Riverpod, GoRouter, Notifications)
-- [ ] Clinical theme definition (Light & Dark mode from approved palette)
-- [ ] Drift SQLite schema (Profiles, ProfileSettings, AppSettings, Medicines, Schedules, DoseRecords)
-- [ ] DAOs with cascade deletes, transactions, and reactive streams
-- [ ] Multi-profile isolation and switching logic
-- [ ] Dose generation engine (idempotent rolling 7-day window)
-- [ ] Dose state machine logic (Take, Snooze with grace-period invariance, Skip with reason, Auto-Missed, Missed Correction)
-- [ ] Unit tests for database, state transitions, and adherence formulas
+- [x] Flutter project setup & dependencies (Drift, Riverpod, GoRouter, Notifications)
+- [x] Clinical theme definition (Light & Dark mode from approved palette)
+- [x] Drift SQLite schema (Profiles, ProfileSettings, AppSettings, Medicines, Schedules, DoseRecords)
+- [x] DAOs with cascade deletes, transactions, and reactive streams
+- [x] Multi-profile isolation and switching logic
+- [x] Dose generation engine (idempotent rolling 7-day window)
+- [x] Dose state machine logic (Take, Snooze with grace-period invariance, Skip with reason, Auto-Missed, Missed Correction)
+- [x] Unit tests for database, state transitions, and adherence formulas (100% passing)
 
 ## Milestone 2: Android Notification & Background Reliability Engine
 *Goal: Rock-solid alarms and notifications that trigger across reboots, app kills, and Doze mode.*
