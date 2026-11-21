@@ -24,6 +24,7 @@ import com.pillrem.app.data.local.AppDatabase
 import com.pillrem.app.data.models.DoseWithMedicine
 import com.pillrem.app.domain.AdherenceCalculator
 import com.pillrem.app.domain.DoseEngine
+import com.pillrem.app.ui.components.PermissionBanner
 import com.pillrem.app.ui.navigation.NavItem
 import com.pillrem.app.ui.screens.HistoryScreen
 import com.pillrem.app.ui.screens.MedicinesScreen
@@ -251,7 +252,10 @@ fun TodayTabContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         item {
-            Spacer(Modifier.height(4.dp))
+            PermissionBanner(isDark = isDarkTheme)
+        }
+
+        item {
             AdherenceBanner(stats = adherenceStats, isDark = isDarkTheme)
         }
 

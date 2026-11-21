@@ -18,8 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import com.pillrem.app.data.local.AppDatabase
 import com.pillrem.app.data.local.entities.ProfileEntity
+import com.pillrem.app.services.PermissionHelper
 import com.pillrem.app.ui.components.AddProfileDialog
 import com.pillrem.app.ui.theme.*
 import kotlinx.coroutines.launch
@@ -179,6 +181,89 @@ fun SettingsScreen(
                             fontSize = 12.sp,
                             color = if (isDark) DarkTextSecondary else LightTextSecondary
                         )
+                    }
+                }
+            }
+        }
+
+        item {
+            Text("Alarm & System Permissions", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        }
+
+        item {
+            val context = LocalContext.current
+            val hasNotif = remember { PermissionHelper.hasNotificationPermission(context) }
+            val canExact = remember { PermissionHelper.canScheduleExactAlarms(context) }
+            val isBatteryIgnored = remember { PermissionHelper.isIgnoringBatteryOptimizations(context) }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Notifications", fontWeight = FontWeight.Medium)
+                            Text(
+                                if (hasNotif) "Granted — alerts will appear" else "Disabled — reminders blocked",
+                                fontSize = 12.sp,
+                                color = if (hasNotif) (if (isDark) DarkSuccess else LightSuccess) else (if (isDark) DarkDanger else LightDanger)
+                            )
+                        }
+                        if (!hasNotif) {
+                            TextButton(onClick = { PermissionHelper.openAppNotificationSettings(context) }) {
+                                Text("Fix")
+                            }
+                        }
+                    }
+
+                    HorizontalDivider()
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Exact Alarms", fontWeight = FontWeight.Medium)
+                            Text(
+                                if (canExact) "Allowed — exact-time trigger" else "Restricted by system",
+                                fontSize = 12.sp,
+                                color = if (canExact) (if (isDark) DarkSuccess else LightSuccess) else (if (isDark) DarkWarning else LightWarning)
+                            )
+                        }
+                        if (!canExact) {
+                            TextButton(onClick = { PermissionHelper.openExactAlarmSettings(context) }) {
+                                Text("Allow")
+                            }
+                        }
+                    }
+
+                    HorizontalDivider()
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text("Battery Optimization Exemption", fontWeight = FontWeight.Medium)
+                            Text(
+                                if (isBatteryIgnored) "Unrestricted — won't be killed in Doze" else "Optimized (recommended to unrestrict)",
+                                fontSize = 12.sp,
+                                color = if (isBatteryIgnored) (if (isDark) DarkSuccess else LightSuccess) else (if (isDark) DarkWarning else LightWarning)
+                            )
+                        }
+                        if (!isBatteryIgnored) {
+                            TextButton(onClick = { PermissionHelper.openBatteryOptimizationSettings(context) }) {
+                                Text("Unrestrict")
+                            }
+                        }
                     }
                 }
             }
