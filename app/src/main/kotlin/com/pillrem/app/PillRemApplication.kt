@@ -7,6 +7,7 @@ import com.pillrem.app.data.local.entities.ScheduleEntity
 import com.pillrem.app.data.models.ScheduleType
 import com.pillrem.app.domain.DoseEngine
 import com.pillrem.app.services.NotificationHelper
+import com.pillrem.app.workers.AutoMissedWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +17,7 @@ class PillRemApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         NotificationHelper.createNotificationChannel(this)
+        AutoMissedWorker.schedulePeriodic(this)
 
         val db = AppDatabase.getInstance(this)
         val doseEngine = DoseEngine(db)

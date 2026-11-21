@@ -74,6 +74,12 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
 
+    // WorkManager (Background Auto-Missed Evaluation)
+    implementation("androidx.work:work-runtime-ktx:2.10.0")
+
+    // JSON Backup & Restore
+    implementation("com.google.code.gson:gson:2.11.0")
+
     // Testing
     testImplementation("junit:junit:4.13.2")
     testImplementation("androidx.room:room-testing:$roomVersion")

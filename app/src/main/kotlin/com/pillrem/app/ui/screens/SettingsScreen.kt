@@ -15,12 +15,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
 import com.pillrem.app.data.local.AppDatabase
 import com.pillrem.app.data.local.entities.ProfileEntity
+import com.pillrem.app.domain.DoseEngine
+import com.pillrem.app.services.BackupHelper
 import com.pillrem.app.services.PermissionHelper
 import com.pillrem.app.ui.components.AddProfileDialog
 import com.pillrem.app.ui.theme.*
@@ -29,6 +36,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun SettingsScreen(
     db: AppDatabase,
+    doseEngine: DoseEngine,
     isDark: Boolean,
     onToggleTheme: () -> Unit
 ) {
@@ -298,6 +306,87 @@ fun SettingsScreen(
                         checked = isDark,
                         onCheckedChange = { onToggleTheme() }
                     )
+                }
+            }
+        }
+
+        item {
+            Text("Data Backup & Restore", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        }
+
+        item {
+            val context = LocalContext.current
+            val exportLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument("application/json")
+            ) { uri ->
+                if (uri != null) {
+                    coroutineScope.launch {
+                        val ok = BackupHelper.exportBackup(context, uri, db)
+                        Toast.makeText(
+                            context,
+                            if (ok) "Backup exported successfully!" else "Failed to export backup",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+
+            val importLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.OpenDocument()
+            ) { uri ->
+                if (uri != null) {
+                    coroutineScope.launch {
+                        val ok = BackupHelper.importBackup(context, uri, db, doseEngine)
+                        Toast.makeText(
+                            context,
+                            if (ok) "Backup restored successfully!" else "Failed to import backup",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        "PillRem is 100% offline. Export your medications, schedules, and history as a JSON file to keep a private backup or transfer to another phone.",
+                        fontSize = 13.sp,
+                        color = if (isDark) DarkTextSecondary else LightTextSecondary
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                exportLauncher.launch("pillrem_backup_${System.currentTimeMillis() / 1000}.json")
+                            },
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Icon(Icons.Default.Download, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text("Export JSON")
+                        }
+
+                        Button(
+                            onClick = {
+                                importLauncher.launch(arrayOf("application/json", "text/*", "*/*"))
+                            },
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isDark) DarkPrimary else LightPrimary
+                            )
+                        ) {
+                            Icon(Icons.Default.Upload, contentDescription = null, modifier = Modifier.size(18.dp))
+                            Spacer(Modifier.width(6.dp))
+                            Text("Import JSON")
+                        }
+                    }
                 }
             }
         }

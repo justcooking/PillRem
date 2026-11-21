@@ -27,6 +27,12 @@ interface ScheduleDao {
     @Query("UPDATE schedules SET isActive = :isActive WHERE id = :scheduleId")
     suspend fun toggleScheduleActive(scheduleId: Long, isActive: Boolean)
 
+    @Query("SELECT * FROM schedules")
+    suspend fun getAllSchedulesSync(): List<ScheduleEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllSchedules(schedules: List<ScheduleEntity>)
+
     @Query("DELETE FROM schedules WHERE id = :scheduleId")
     suspend fun deleteSchedule(scheduleId: Long)
 }

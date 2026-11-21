@@ -77,6 +77,15 @@ interface ProfileDao {
         activateProfile(profileId)
     }
 
+    @Query("SELECT * FROM profile_settings")
+    suspend fun getAllSettingsSync(): List<ProfileSettingsEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllProfiles(profiles: List<ProfileEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllSettings(settings: List<ProfileSettingsEntity>)
+
     @Query("DELETE FROM profiles WHERE id = :profileId")
     suspend fun deleteProfile(profileId: Long)
 }

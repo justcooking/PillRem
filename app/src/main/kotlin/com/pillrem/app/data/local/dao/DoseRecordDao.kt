@@ -46,6 +46,12 @@ interface DoseRecordDao {
     @Query("SELECT * FROM dose_records WHERE profileId = :profileId AND scheduledAt >= :since ORDER BY scheduledAt DESC")
     suspend fun getDoseHistoryForProfile(profileId: Long, since: Long): List<DoseRecordEntity>
 
+    @Query("SELECT * FROM dose_records")
+    suspend fun getAllDosesSync(): List<DoseRecordEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllDoses(doses: List<DoseRecordEntity>)
+
     @Query("SELECT * FROM dose_records WHERE profileId = :profileId ORDER BY scheduledAt DESC")
     suspend fun getAllDoseHistoryForProfile(profileId: Long): List<DoseRecordEntity>
 }

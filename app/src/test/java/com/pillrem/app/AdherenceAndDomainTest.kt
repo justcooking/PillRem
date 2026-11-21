@@ -92,4 +92,36 @@ class AdherenceAndDomainTest {
         val stats = AdherenceCalculator.calculate(doses)
         assertEquals(100.0f, stats.adherenceRate, 0.01f)
     }
+
+    @Test
+    fun testBackupData_jsonSerializationAndDeserialization() {
+        val gson = com.google.gson.Gson()
+        val backup = com.pillrem.app.services.PillRemBackupData(
+            version = 1,
+            exportedAt = 123456789L,
+            profiles = listOf(
+                com.pillrem.app.data.local.entities.ProfileEntity(id = 1, name = "Sarah Connor")
+            ),
+            profileSettings = listOf(
+                com.pillrem.app.data.local.entities.ProfileSettingsEntity(profileId = 1, gracePeriodMinutes = 60)
+            ),
+            medicines = listOf(
+                com.pillrem.app.data.local.entities.MedicineEntity(id = 1, profileId = 1, name = "Metformin", stockCount = 28)
+            ),
+            schedules = emptyList(),
+            doseRecords = emptyList()
+        )
+
+        val json = gson.toJson(backup)
+        assertNotNull(json)
+        assertTrue(json.contains("Sarah Connor"))
+        assertTrue(json.contains("Metformin"))
+
+        val restored = gson.fromJson(json, com.pillrem.app.services.PillRemBackupData::class.java)
+        assertEquals(backup.version, restored.version)
+        assertEquals(1, restored.profiles.size)
+        assertEquals("Sarah Connor", restored.profiles[0].name)
+        assertEquals(1, restored.medicines.size)
+        assertEquals("Metformin", restored.medicines[0].name)
+    }
 }

@@ -208,6 +208,7 @@ fun MainAppHost(
                 )
                 NavItem.SETTINGS -> SettingsScreen(
                     db = db,
+                    doseEngine = doseEngine,
                     isDark = isDarkTheme,
                     onToggleTheme = onToggleTheme
                 )

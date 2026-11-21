@@ -36,6 +36,12 @@ interface MedicineDao {
     @Query("UPDATE medicines SET stockCount = :newStock WHERE id = :medicineId")
     suspend fun updateStock(medicineId: Long, newStock: Int)
 
+    @Query("SELECT * FROM medicines")
+    suspend fun getAllMedicinesSync(): List<MedicineEntity>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllMedicines(medicines: List<MedicineEntity>)
+
     @Delete
     suspend fun deleteMedicine(medicine: MedicineEntity)
 }
