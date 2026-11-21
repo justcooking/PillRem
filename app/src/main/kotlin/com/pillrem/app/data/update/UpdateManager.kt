@@ -34,12 +34,14 @@ class UpdateManager(private val context: Context) {
         }
 
         try {
-            val connection = openConnectionWithRedirects(latestReleaseApiUrl)
+            val url = URL(latestReleaseApiUrl)
+            val connection = url.openConnection() as HttpURLConnection
             connection.requestMethod = "GET"
             connection.setRequestProperty("Accept", "application/vnd.github.v3+json")
             connection.setRequestProperty("User-Agent", "PillRem-Android/${BuildConfig.VERSION_NAME}")
             connection.connectTimeout = 10000
             connection.readTimeout = 15000
+            connection.instanceFollowRedirects = true
 
             val responseCode = connection.responseCode
             if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
@@ -115,11 +117,7 @@ class UpdateManager(private val context: Context) {
                 totalBytes = releaseInfo.apkSize
             )
 
-            val connection = openConnectionWithRedirects(releaseInfo.downloadUrl)
-            connection.setRequestProperty("User-Agent", "PillRem-Android/${BuildConfig.VERSION_NAME}")
-            connection.connectTimeout = 15000
-            connection.readTimeout = 30000
-
+            val connection = openConnectionFollowingRedirects(releaseInfo.downloadUrl)
             val totalBytes = if (connection.contentLengthLong > 0) connection.contentLengthLong else releaseInfo.apkSize
 
             connection.inputStream.use { input ->
@@ -199,27 +197,34 @@ class UpdateManager(private val context: Context) {
         _updateState.value = UpdateState.Idle
     }
 
-    private fun openConnectionWithRedirects(initialUrl: String): HttpURLConnection {
-        var url = initialUrl
-        var connection: HttpURLConnection
+    private fun openConnectionFollowingRedirects(initialUrl: String): HttpURLConnection {
+        var currentUrl = initialUrl
         var redirects = 0
         while (redirects < 5) {
-            connection = URL(url).openConnection() as HttpURLConnection
-            connection.instanceFollowRedirects = true
-            val status = connection.responseCode
-            if (status == HttpURLConnection.HTTP_MOVED_TEMP ||
-                status == HttpURLConnection.HTTP_MOVED_PERM ||
-                status == 307 || status == 308
+            val conn = URL(currentUrl).openConnection() as HttpURLConnection
+            conn.setRequestProperty("User-Agent", "PillRem-Android/${BuildConfig.VERSION_NAME}")
+            conn.connectTimeout = 15000
+            conn.readTimeout = 30000
+            conn.instanceFollowRedirects = false
+
+            val code = conn.responseCode
+            if (code == HttpURLConnection.HTTP_MOVED_TEMP ||
+                code == HttpURLConnection.HTTP_MOVED_PERM ||
+                code == 307 || code == 308
             ) {
-                val newUrl = connection.getHeaderField("Location") ?: break
-                connection.disconnect()
-                url = newUrl
+                val location = conn.getHeaderField("Location") ?: break
+                conn.disconnect()
+                currentUrl = location
                 redirects++
             } else {
-                return connection
+                return conn
             }
         }
-        return URL(url).openConnection() as HttpURLConnection
+        val finalConn = URL(currentUrl).openConnection() as HttpURLConnection
+        finalConn.setRequestProperty("User-Agent", "PillRem-Android/${BuildConfig.VERSION_NAME}")
+        finalConn.connectTimeout = 15000
+        finalConn.readTimeout = 30000
+        return finalConn
     }
 
     companion object {
