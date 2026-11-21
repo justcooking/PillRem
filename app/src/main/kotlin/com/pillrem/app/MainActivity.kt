@@ -20,12 +20,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
 import com.pillrem.app.data.local.AppDatabase
 import com.pillrem.app.data.models.DoseWithMedicine
+import com.pillrem.app.data.update.UpdateManager
+import com.pillrem.app.data.update.UpdateState
 import com.pillrem.app.domain.AdherenceCalculator
 import com.pillrem.app.domain.DoseEngine
 import com.pillrem.app.ui.components.PermissionBanner
 import com.pillrem.app.ui.components.SkipDoseDialog
+import com.pillrem.app.ui.components.UpdateDialog
 import com.pillrem.app.ui.navigation.NavItem
 import com.pillrem.app.ui.screens.HistoryScreen
 import com.pillrem.app.ui.screens.MedicinesScreen
@@ -67,6 +71,15 @@ fun MainAppHost(
     onToggleTheme: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val updateManager = remember { UpdateManager(context.applicationContext) }
+    val updateState by updateManager.updateState.collectAsState()
+    var showUpdateDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        updateManager.checkForUpdates(silent = true)
+    }
+
     var currentNav by remember { mutableStateOf(NavItem.TODAY) }
 
     val profiles by db.profileDao().getAllProfiles().collectAsState(initial = emptyList())
@@ -192,7 +205,9 @@ fun MainAppHost(
                     activeId = activeId,
                     db = db,
                     doseEngine = doseEngine,
-                    isDarkTheme = isDarkTheme
+                    isDarkTheme = isDarkTheme,
+                    updateState = updateState,
+                    onShowUpdate = { showUpdateDialog = true }
                 )
                 NavItem.MEDICINES -> MedicinesScreen(
                     profileId = activeId,
@@ -210,9 +225,28 @@ fun MainAppHost(
                     db = db,
                     doseEngine = doseEngine,
                     isDark = isDarkTheme,
-                    onToggleTheme = onToggleTheme
+                    onToggleTheme = onToggleTheme,
+                    updateManager = updateManager
                 )
             }
+        }
+
+        if (showUpdateDialog || updateState is UpdateState.Downloading || updateState is UpdateState.ReadyToInstall || updateState is UpdateState.UpToDate || updateState is UpdateState.Error) {
+            UpdateDialog(
+                updateState = updateState,
+                onDismiss = {
+                    showUpdateDialog = false
+                    updateManager.resetState()
+                },
+                onStartDownload = { releaseInfo ->
+                    coroutineScope.launch {
+                        updateManager.downloadAndPrepareUpdate(releaseInfo)
+                    }
+                },
+                onInstall = { apkPath ->
+                    updateManager.launchPackageInstaller(apkPath)
+                }
+            )
         }
     }
 }
@@ -222,7 +256,9 @@ fun TodayTabContent(
     activeId: Long,
     db: AppDatabase,
     doseEngine: DoseEngine,
-    isDarkTheme: Boolean
+    isDarkTheme: Boolean,
+    updateState: UpdateState,
+    onShowUpdate: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     var doseToSkip by remember { mutableStateOf<DoseWithMedicine?>(null) }
@@ -254,6 +290,55 @@ fun TodayTabContent(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        if (updateState is UpdateState.UpdateAvailable) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (isDarkTheme) MaterialTheme.colorScheme.primaryContainer else Color(0xFFE3F2FD)
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.SystemUpdate,
+                            contentDescription = null,
+                            tint = if (isDarkTheme) DarkPrimary else LightPrimary
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "Update Available: PillRem ${updateState.releaseInfo.tagName}",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                "Tap to review changelog & install",
+                                fontSize = 12.sp,
+                                color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
+                            )
+                        }
+                        Button(
+                            onClick = onShowUpdate,
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isDarkTheme) DarkPrimary else LightPrimary
+                            )
+                        ) {
+                            Text("Update", fontSize = 12.sp)
+                        }
+                    }
+                }
+            }
+        }
+
         item {
             PermissionBanner(isDark = isDarkTheme)
         }

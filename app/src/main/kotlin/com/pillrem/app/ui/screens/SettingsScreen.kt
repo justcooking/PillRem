@@ -20,12 +20,17 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.material.icons.filled.Upload
+import androidx.compose.material.icons.filled.SystemUpdate
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.platform.LocalContext
+import com.pillrem.app.BuildConfig
 import com.pillrem.app.data.local.AppDatabase
 import com.pillrem.app.data.local.entities.ProfileEntity
+import com.pillrem.app.data.update.UpdateManager
+import com.pillrem.app.data.update.UpdateState
 import com.pillrem.app.domain.DoseEngine
 import com.pillrem.app.services.BackupHelper
 import com.pillrem.app.services.PermissionHelper
@@ -38,7 +43,8 @@ fun SettingsScreen(
     db: AppDatabase,
     doseEngine: DoseEngine,
     isDark: Boolean,
-    onToggleTheme: () -> Unit
+    onToggleTheme: () -> Unit,
+    updateManager: UpdateManager
 ) {
     val coroutineScope = rememberCoroutineScope()
     val profiles by db.profileDao().getAllProfiles().collectAsState(initial = emptyList())
@@ -385,6 +391,83 @@ fun SettingsScreen(
                             Icon(Icons.Default.Upload, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(Modifier.width(6.dp))
                             Text("Import JSON")
+                        }
+                    }
+                }
+            }
+        }
+
+        item {
+            Spacer(Modifier.height(4.dp))
+            Text("App Updates & System", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        }
+
+        item {
+            val updateState by updateManager.updateState.collectAsState()
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.SystemUpdate,
+                            contentDescription = null,
+                            tint = if (isDark) DarkPrimary else LightPrimary,
+                            modifier = Modifier.size(28.dp)
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                "PillRem v${BuildConfig.VERSION_NAME}",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 15.sp
+                            )
+                            Text(
+                                "Build ${BuildConfig.VERSION_CODE} • Over-The-Air GitHub Releases",
+                                fontSize = 12.sp,
+                                color = if (isDark) DarkTextSecondary else LightTextSecondary
+                            )
+                        }
+                    }
+
+                    Text(
+                        "PillRem supports direct over-the-air updates. Check for releases directly from GitHub without third-party app stores or cloud tracking.",
+                        fontSize = 13.sp,
+                        color = if (isDark) DarkTextSecondary else LightTextSecondary
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        Button(
+                            onClick = {
+                                coroutineScope.launch {
+                                    updateManager.checkForUpdates(silent = false)
+                                }
+                            },
+                            enabled = updateState !is UpdateState.Checking && updateState !is UpdateState.Downloading,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isDark) DarkPrimary else LightPrimary
+                            )
+                        ) {
+                            if (updateState is UpdateState.Checking) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(16.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(Modifier.width(8.dp))
+                                Text("Checking...")
+                            } else {
+                                Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
+                                Spacer(Modifier.width(6.dp))
+                                Text("Check for Updates")
+                            }
                         }
                     }
                 }
