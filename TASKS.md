@@ -33,5 +33,6 @@
 - [x] **Today Screen:** Daily medication checklist with instant Take/Snooze/Skip controls
 - [x] **Adherence Banner:** Adherence score (% taken vs missed, excluding skipped)
 - [x] Light / Dark theme toggle
-- [ ] Comprehensive Medicine Cabinet & Schedule Builder screens
-- [ ] History & Analytics calendar view with missed-dose correction dialog
+- [x] **Medicine Cabinet & Schedule Builder screens:** Active/archived tabs, stock counts, and "+ Add Medication" wizard
+- [x] **History & Analytics screen:** Filter chips (All, Taken, Missed, Skipped) and tap-to-correct for missed doses
+- [x] **Settings & Profiles screen:** Grace period and default snooze sliders, multi-profile manager, zero-cloud privacy guarantee

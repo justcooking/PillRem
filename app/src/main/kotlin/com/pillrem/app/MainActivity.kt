@@ -4,9 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,10 +21,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pillrem.app.data.local.AppDatabase
-import com.pillrem.app.data.local.entities.ProfileEntity
 import com.pillrem.app.data.models.DoseWithMedicine
 import com.pillrem.app.domain.AdherenceCalculator
 import com.pillrem.app.domain.DoseEngine
+import com.pillrem.app.ui.navigation.NavItem
+import com.pillrem.app.ui.screens.HistoryScreen
+import com.pillrem.app.ui.screens.MedicinesScreen
+import com.pillrem.app.ui.screens.SettingsScreen
 import com.pillrem.app.ui.theme.*
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
             var isDarkTheme by remember { mutableStateOf(false) }
 
             PillRemTheme(darkTheme = isDarkTheme) {
-                MainScreen(
+                MainAppHost(
                     db = db,
                     doseEngine = doseEngine,
                     isDarkTheme = isDarkTheme,
@@ -58,39 +58,21 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen(
+fun MainAppHost(
     db: AppDatabase,
     doseEngine: DoseEngine,
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
+    var currentNav by remember { mutableStateOf(NavItem.TODAY) }
+
     val profiles by db.profileDao().getAllProfiles().collectAsState(initial = emptyList())
     val activeProfile by db.profileDao().getActiveProfile().collectAsState(initial = null)
-
     var showProfileMenu by remember { mutableStateOf(false) }
 
-    // Start & End of today
-    val calendar = Calendar.getInstance().apply {
-        set(Calendar.HOUR_OF_DAY, 0)
-        set(Calendar.MINUTE, 0)
-        set(Calendar.SECOND, 0)
-        set(Calendar.MILLISECOND, 0)
-    }
-    val startOfToday = calendar.timeInMillis
-    calendar.add(Calendar.DAY_OF_YEAR, 1)
-    val endOfToday = calendar.timeInMillis - 1
-
     val activeId = activeProfile?.id ?: 0L
-    val doses by db.doseRecordDao().getDosesForProfileRange(activeId, startOfToday, endOfToday)
-        .collectAsState(initial = emptyList())
-
-    val allHistory by produceState<List<com.pillrem.app.data.local.entities.DoseRecordEntity>>(initialValue = emptyList(), activeId, doses) {
-        value = if (activeId != 0L) db.doseRecordDao().getAllDoseHistoryForProfile(activeId) else emptyList()
-    }
-    val adherenceStats = remember(allHistory) {
-        AdherenceCalculator.calculate(allHistory)
-    }
+    val activeColor = if (isDarkTheme) DarkPrimary else LightPrimary
 
     Scaffold(
         topBar = {
@@ -176,89 +158,171 @@ fun MainScreen(
                 )
             )
         },
+        bottomBar = {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = activeColor
+            ) {
+                NavItem.entries.forEach { item ->
+                    NavigationBarItem(
+                        icon = { Icon(item.icon, contentDescription = item.title) },
+                        label = { Text(item.title) },
+                        selected = currentNav == item,
+                        onClick = { currentNav = item },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = activeColor,
+                            selectedTextColor = activeColor,
+                            indicatorColor = activeColor.copy(alpha = 0.15f)
+                        )
+                    )
+                }
+            }
+        },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            item {
-                Spacer(Modifier.height(4.dp))
-                AdherenceBanner(stats = adherenceStats, isDark = isDarkTheme)
+            when (currentNav) {
+                NavItem.TODAY -> TodayTabContent(
+                    activeId = activeId,
+                    db = db,
+                    doseEngine = doseEngine,
+                    isDarkTheme = isDarkTheme
+                )
+                NavItem.MEDICINES -> MedicinesScreen(
+                    profileId = activeId,
+                    db = db,
+                    doseEngine = doseEngine,
+                    isDark = isDarkTheme
+                )
+                NavItem.HISTORY -> HistoryScreen(
+                    profileId = activeId,
+                    db = db,
+                    doseEngine = doseEngine,
+                    isDark = isDarkTheme
+                )
+                NavItem.SETTINGS -> SettingsScreen(
+                    db = db,
+                    isDark = isDarkTheme,
+                    onToggleTheme = onToggleTheme
+                )
             }
+        }
+    }
+}
 
+@Composable
+fun TodayTabContent(
+    activeId: Long,
+    db: AppDatabase,
+    doseEngine: DoseEngine,
+    isDarkTheme: Boolean
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    // Start & End of today
+    val calendar = Calendar.getInstance().apply {
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+    val startOfToday = calendar.timeInMillis
+    calendar.add(Calendar.DAY_OF_YEAR, 1)
+    val endOfToday = calendar.timeInMillis - 1
+
+    val doses by db.doseRecordDao().getDosesForProfileRange(activeId, startOfToday, endOfToday)
+        .collectAsState(initial = emptyList())
+
+    val allHistory by produceState<List<com.pillrem.app.data.local.entities.DoseRecordEntity>>(initialValue = emptyList(), activeId, doses) {
+        value = if (activeId != 0L) db.doseRecordDao().getAllDoseHistoryForProfile(activeId) else emptyList()
+    }
+    val adherenceStats = remember(allHistory) {
+        AdherenceCalculator.calculate(allHistory)
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        item {
+            Spacer(Modifier.height(4.dp))
+            AdherenceBanner(stats = adherenceStats, isDark = isDarkTheme)
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Today's Medication Doses",
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    "${doses.size} scheduled",
+                    fontSize = 13.sp,
+                    color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
+                )
+            }
+        }
+
+        if (doses.isEmpty()) {
             item {
-                Row(
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text(
-                        "Today's Medication Doses",
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        "${doses.size} scheduled",
-                        fontSize = 13.sp,
-                        color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
-                    )
-                }
-            }
-
-            if (doses.isEmpty()) {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                        shape = RoundedCornerShape(16.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                "No doses scheduled for today.",
-                                color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
-                            )
-                        }
+                        Text(
+                            "No doses scheduled for today.",
+                            color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
+                        )
                     }
                 }
-            } else {
-                items(doses, key = { it.dose.id }) { item ->
-                    DoseCard(
-                        item = item,
-                        isDark = isDarkTheme,
-                        onTake = {
-                            coroutineScope.launch { doseEngine.takeDose(item.dose.id) }
-                        },
-                        onSnooze = {
-                            coroutineScope.launch { doseEngine.snoozeDose(item.dose.id, 15) }
-                        },
-                        onSkip = {
-                            coroutineScope.launch { doseEngine.skipDose(item.dose.id, "Patient skipped") }
-                        }
-                    )
-                }
             }
+        } else {
+            items(doses, key = { it.dose.id }) { item ->
+                DoseCard(
+                    item = item,
+                    isDark = isDarkTheme,
+                    onTake = {
+                        coroutineScope.launch { doseEngine.takeDose(item.dose.id) }
+                    },
+                    onSnooze = {
+                        coroutineScope.launch { doseEngine.snoozeDose(item.dose.id, 15) }
+                    },
+                    onSkip = {
+                        coroutineScope.launch { doseEngine.skipDose(item.dose.id, "Patient skipped") }
+                    }
+                )
+            }
+        }
 
-            item {
-                Spacer(Modifier.height(8.dp))
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text(
-                        "PillRem Native Android • Kotlin & Compose • SQLite Room",
-                        fontSize = 11.sp,
-                        color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
-                    )
-                }
-                Spacer(Modifier.height(16.dp))
+        item {
+            Spacer(Modifier.height(8.dp))
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                Text(
+                    "PillRem Native Android • Kotlin & Compose • SQLite Room",
+                    fontSize = 11.sp,
+                    color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
+                )
             }
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
