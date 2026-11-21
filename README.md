@@ -52,47 +52,93 @@ When compiling locally from source using Gradle:
 
 ---
 
-## Key Architecture & Features
+## 📖 User Guide: How to Use PillRem
 
-### 1. Reliable Exact Reminders (`AlarmManager`)
-* **Exact Waking Alarms**: Uses `AlarmManager.setExactAndAllowWhileIdle()` to reliably wake the device even in Android Doze mode.
-* **Lock Screen Actions**: High-importance notifications with immediate headless **Take** and **Snooze** actions.
-* **Unified Alarm Reconciliation**: Single reconciliation path (`DoseEngine.reconcileAndScheduleAlarms`) ensures newly added medicines, restored backups, app launches, reboots, and background workers always schedule upcoming alarms.
-* **Persistent Reboot Recovery**: `BootReceiver` automatically reconciles the 7-day rolling dose schedule upon phone reboot or timezone shift.
-* **Configurable Grace Periods & Snoozes**: Per-profile settings for grace periods (15–180 minutes) and dynamic snooze intervals (5–60 minutes).
-* **Auto-Missed Evaluation**: Background WorkManager (`AutoMissedWorker`) marks expired unacknowledged doses as missed and replenishes future rolling doses.
-
-### 2. Clinical Dose State Machine & Adherence
-* **Invariant Dose Engine**: Rolling 7-day idempotent dose pre-generation based on schedules (`daily`, `specific_days`, `interval_days`).
-* **Concurrency-Guarded Atomic Transitions**: SQLite transactions (`db.withTransaction`) preventing duplicate stock decrements or invalid re-takes.
-* **Clinical Adherence Formula**:
-  $$\text{Adherence Rate} = \frac{\text{Taken}}{\text{Taken} + \text{Missed}} \times 100\%$$
-  *(Note: Medically skipped doses are explicitly excluded from penalties).*
-* **Fractional Dosage Support**: Full decimal dosage support (`0.5 tablet`, `1.5 ml`, `0.25 mg`) with strict form validation.
-* **Tap-to-Correct**: Patients can correct mistakenly marked missed doses with audit logging.
-* **Archive Lifecycle**: Archiving a medicine safely cancels future alarms, clears pending dose slots, and excludes archived records from the active schedule engine.
-
-### 3. Multi-Profile Isolation
-* Independent medication schedules, history, and adherence statistics per profile (e.g., family members or dependents).
-* One-tap profile switching with distinct clinical avatar colors.
-* Foreign-key cascade safety preventing orphaned records.
-
-### 4. Offline JSON Backup & Restore
-* Complete database export and import to standard JSON format.
-* Transactional atomic restores with schema version validation and automatic alarm reconstruction.
+### 1. Quick-Start Setup (First Launch)
+1. **Grant Permissions**: Upon opening PillRem for the first time, tap the banner at the top of the **Today** tab to enable:
+   * **Notifications**: Required to display lock screen medication reminders.
+   * **Exact Alarms**: Required by Android 12+ so alarms ring at the precise scheduled minute even during battery-saver Doze mode.
+   * **Battery Optimization Exemption**: Ensures Android doesn't kill alarms when your phone is left idle overnight.
+2. **Profile Selection**: PillRem comes with an initial profile. You can tap the profile avatar in the top-right corner to switch profiles or create separate profiles for family members or dependents.
 
 ---
 
-## Tech Stack
+### 2. Tab-by-Tab Feature Walkthrough
+
+#### 📅 Today Screen (Your Daily Dose Checklist)
+* **Adherence Gauge**: Displays your real-time adherence rate calculated as:
+  $$\text{Adherence Rate} = \frac{\text{Taken}}{\text{Taken} + \text{Missed}} \times 100\%$$
+* **Dose Checklist**: Shows all medications scheduled for today in chronological order.
+* **Taking a Dose (`[Take]`)**:
+  * Tap **Take** when you consume your medication.
+  * The dose status instantly transitions to **Taken**, the timestamp is recorded, and your inventory stock automatically decrements.
+* **Skipping a Dose (`[Skip]`)**:
+  * Tap **Skip** if you are advised to pause a dose (e.g. fasting before blood tests, doctor instructions, nausea, or temporary stock-out).
+  * Select or type a reason.
+  * **Clinical Benefit:** Skipped doses are mathematically excluded from adherence penalties.
+* **Lock Screen & Notification Actions**:
+  * When an alarm fires, a high-priority banner appears with sound and vibration.
+  * Tap **Take** directly from the lock screen to record it without unlocking your phone.
+  * Tap **Snooze** to defer the reminder by your configured snooze duration (e.g. 15 or 20 minutes) while preserving your dose's grace-period deadline.
+
+---
+
+#### 💊 Cabinet Screen (Medicine Inventory & Schedules)
+* **Adding a New Medication**:
+  * Tap the **`+`** floating action button.
+  * **Medicine Name**: Enter brand or generic name (e.g. *Metformin*).
+  * **Dosage & Unit**: Supports both whole numbers and fractional quantities (e.g. `0.5`, `1`, `2.5`) with units (`tablet`, `capsule`, `mg`, `ml`, `drops`).
+  * **Form**: Select tablet, capsule, syrup, injection, drops, inhaler, patch, or cream.
+  * **Clinical Instructions**: Choose *With Food*, *Before Food*, *After Food*, *Empty Stomach*, or *Before Bed*.
+  * **Stock Count**: Enter current quantity on hand. PillRem displays warning badges when stock drops to 7 or fewer doses remaining.
+  * **Scheduled Time**: Set exact daily hour and minute.
+  * Tap **Save** — PillRem instantly generates a 7-day rolling schedule and arms the system alarm.
+* **Active vs. Archived Medications**:
+  * When a temporary prescription ends (e.g. a 7-day course of antibiotics), tap **Archive**.
+  * Archiving immediately cancels future scheduled alarms and removes pending future doses while completely preserving past dose logs for doctor review.
+  * Switch to the **Archived** tab at any time to restore a medication.
+
+---
+
+#### 📜 History Screen (Audit Log & Adherence Correction)
+* **Filterable Log**: View past medication events filtered by **All**, **Taken**, **Missed**, or **Skipped**.
+* **Tap-to-Correct (Missed Dose Correction)**:
+  * If you took a medication but forgot to tap the notification in time, the system will have automatically marked it as Missed after the grace period expired.
+  * Tap any **Missed** record in the History tab to correct it back to **Taken**.
+  * The system updates the record, logs the confirmed timestamp, decrements stock, and recalculates your adherence score.
+
+---
+
+#### ⚙️ Settings Screen (Profiles, Invariants & Privacy)
+* **Profile Management**:
+  * Create profiles for yourself, children, or elderly family members.
+  * Each profile maintains completely isolated medications, schedules, stock counts, and history.
+* **Clinical Invariant Settings**:
+  * **Grace Period Slider (15–180 minutes)**: How long a dose remains actionable before the engine marks it as missed.
+  * **Snooze Interval Slider (5–60 minutes)**: How long lock screen snooze notifications wait before re-alerting you.
+* **System Alarm Diagnostics Card**:
+  * Provides live diagnostics verifying whether exact alarms are enabled and battery optimization is disabled.
+* **100% Offline JSON Backup & Restore**:
+  * **Export JSON**: Saves your complete profile, medicine, schedule, and dose history into a clean JSON file to store in your private files or transfer to a new device.
+  * **Import JSON**: Restores data with atomic transactions, schema validation, and automatic alarm reconstruction.
+* **App Updates**:
+  * View current build version and tap **"Check for Updates"** to query GitHub Releases directly without third-party app stores.
+* **Light / Dark Mode**:
+  * Toggle between Clinical Slate Blue light mode and battery-saving dark mode.
+
+---
+
+## Tech Stack & Architecture
 
 | Layer | Technology |
 |---|---|
 | **Language** | Kotlin 2.1.10 |
 | **UI Toolkit** | Jetpack Compose (Material 3) |
-| **Local Database** | SQLite via AndroidX Room 2.6.1 |
-| **Async & Concurrency** | Kotlin Coroutines & Flow |
+| **Local Database** | SQLite via AndroidX Room 2.6.1 with Foreign Key CASCADE deletes |
+| **Alarm System** | Android `AlarmManager.setExactAndAllowWhileIdle()` |
+| **Concurrency** | Kotlin Coroutines & Flow |
 | **Background Processing** | AndroidX WorkManager 2.10.0 |
-| **JSON Serialization** | Google Gson 2.11.0 |
+| **JSON Backup** | Google Gson 2.11.0 |
 | **Testing** | JUnit 4, Kotlinx Coroutines Test |
 
 ---
@@ -116,7 +162,7 @@ PillRem follows strict WCAG AAA contrast standards for healthcare accessibility:
 
 ---
 
-## Building and Running
+## Building and Running from Source
 
 ### Prerequisites
 * JDK 17 (or Android Studio JBR 17+)
