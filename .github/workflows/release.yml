@@ -40,7 +40,8 @@ jobs:
           APK_SRC=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
           if [ -f "$APK_SRC" ]; then
             cp "$APK_SRC" "artifacts/PillRem-${VERSION}.apk"
-            echo "Artifact staged: artifacts/PillRem-${VERSION}.apk"
+            cp "$APK_SRC" "artifacts/PillRem-latest.apk"
+            echo "Artifacts staged: artifacts/PillRem-${VERSION}.apk and artifacts/PillRem-latest.apk"
           else
             echo "Error: Release APK not found!"
             exit 1

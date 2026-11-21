@@ -1,40 +1,83 @@
 # PillRem (Android Native)
 
-> **Clinical-grade, offline-first medication reminder and adherence tracking Android application.**
+<div align="center">
 
-PillRem is built strictly adhering to the philosophy of **simplicity, clinical reliability, and privacy**. It features zero cloud dependencies, zero user accounts, zero analytics or telemetry, and zero advertising. All sensitive patient medication data stays strictly on the physical device in a secure SQLite database.
+[![Latest Release](https://img.shields.io/github/v/release/justcooking/PillRem?style=for-the-badge&color=2B6CB0&label=Latest%20Release)](https://github.com/justcooking/PillRem/releases/latest)
+[![Download APK](https://img.shields.io/badge/Download-PillRem.apk-388E67?style=for-the-badge&logo=android&logoColor=white)](https://github.com/justcooking/PillRem/releases/latest/download/PillRem-latest.apk)
+[![License: MIT](https://img.shields.io/badge/License-MIT-gray?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-Android%208.0%2B-blue?style=for-the-badge&logo=android)](https://developer.android.com)
+
+**Clinical-grade, offline-first medication reminder and adherence tracking Android application.**
+
+*100% Offline • Zero Cloud • Zero Telemetry • Zero Ads • WCAG AAA Accessible*
+
+</div>
+
+---
+
+## 📥 Where to Get the APK
+
+### 1. Download Latest Release (Recommended for Users)
+You can download the pre-compiled APK directly from GitHub Releases:
+* **Direct APK Download:** [Download PillRem-latest.apk](https://github.com/justcooking/PillRem/releases/latest/download/PillRem-latest.apk)
+* **All Releases & Changelogs:** [GitHub Releases Page](https://github.com/justcooking/PillRem/releases)
+
+#### How to Install on Android:
+1. Download `PillRem-latest.apk` onto your phone.
+2. Tap the downloaded `.apk` notification or open it from your file manager.
+3. If prompted by Android, enable **"Allow from this source"** for your browser/file manager (standard Android security check for direct APKs).
+4. Tap **Install** and launch PillRem!
+
+---
+
+### 2. Autonomous In-App Over-The-Air (OTA) Updates
+You do **not** need to manually download APKs for subsequent updates:
+* PillRem features a built-in privacy-preserving update engine (`UpdateManager.kt`).
+* When a new version is published to GitHub, an **"Update Available"** banner appears in the app.
+* Tap **"Download & Install"** to view what's new and update with a single tap.
+* **All patient data, history, and schedules are 100% preserved across updates.**
+
+---
+
+### 3. Local Build Output Paths (For Developers)
+When compiling locally from source using Gradle:
+* **Debug APK** *(Pre-signed with Android debug key, ready to sideload via ADB)*:
+  ```
+  app/build/outputs/apk/debug/app-debug.apk
+  ```
+* **Release APK** *(Optimized, shrunk release binary)*:
+  ```
+  app/build/outputs/apk/release/app-release-unsigned.apk
+  ```
 
 ---
 
 ## Key Architecture & Features
 
 ### 1. Reliable Exact Reminders (`AlarmManager`)
-* **Exact Waking Alarms**: Uses `AlarmManager.setExactAndAllowWhileIdle()` to reliably wake the device even under aggressive Android Doze mode.
+* **Exact Waking Alarms**: Uses `AlarmManager.setExactAndAllowWhileIdle()` to reliably wake the device even in Android Doze mode.
 * **Lock Screen Actions**: High-importance notifications with immediate headless **Take** and **Snooze** actions.
-* **Persistent Reboot Recovery**: `BootReceiver` automatically reconciles the 7-day rolling dose schedule and schedules alarms upon device reboot, app update, or timezone shift.
-* **Configurable Grace Periods & Snoozes**: Per-profile settings for grace periods (15–180 minutes) and snooze intervals (5–60 minutes).
+* **Unified Alarm Reconciliation**: Single reconciliation path (`DoseEngine.reconcileAndScheduleAlarms`) ensures newly added medicines, restored backups, app launches, reboots, and background workers always schedule upcoming alarms.
+* **Persistent Reboot Recovery**: `BootReceiver` automatically reconciles the 7-day rolling dose schedule upon phone reboot or timezone shift.
+* **Configurable Grace Periods & Snoozes**: Per-profile settings for grace periods (15–180 minutes) and dynamic snooze intervals (5–60 minutes).
 * **Auto-Missed Evaluation**: Background WorkManager (`AutoMissedWorker`) marks expired unacknowledged doses as missed and replenishes future rolling doses.
 
 ### 2. Clinical Dose State Machine & Adherence
 * **Invariant Dose Engine**: Rolling 7-day idempotent dose pre-generation based on schedules (`daily`, `specific_days`, `interval_days`).
-* **Atomic State Transitions**: Concurrency-guarded, transactional transitions preventing duplicate stock deductions or invalid re-takes.
+* **Concurrency-Guarded Atomic Transitions**: SQLite transactions (`db.withTransaction`) preventing duplicate stock decrements or invalid re-takes.
 * **Clinical Adherence Formula**:
   $$\text{Adherence Rate} = \frac{\text{Taken}}{\text{Taken} + \text{Missed}} \times 100\%$$
   *(Note: Medically skipped doses are explicitly excluded from penalties).*
-* **Fractional Dosage Support**: Full decimal dosage support (e.g., 0.5 tablets, 1.5 ml) with clean typography.
+* **Fractional Dosage Support**: Full decimal dosage support (`0.5 tablet`, `1.5 ml`, `0.25 mg`) with strict form validation.
 * **Tap-to-Correct**: Patients can correct mistakenly marked missed doses with audit logging.
+* **Archive Lifecycle**: Archiving a medicine safely cancels future alarms, clears pending dose slots, and excludes archived records from the active schedule engine.
 
 ### 3. Multi-Profile Isolation
 * Independent medication schedules, history, and adherence statistics per profile (e.g., family members or dependents).
 * One-tap profile switching with distinct clinical avatar colors.
 * Foreign-key cascade safety preventing orphaned records.
 
-### 4. Over-The-Air (OTA) In-App Updates
-* Direct GitHub Releases update checker (`https://api.github.com/repos/justcooking/PillRem/releases/latest`).
-* Complete changelog viewer, download progress indicator, and native Android `PackageInstaller` launch via `FileProvider`.
-* Zero third-party app store or cloud tracking required.
-
-### 5. Offline JSON Backup & Restore
+### 4. Offline JSON Backup & Restore
 * Complete database export and import to standard JSON format.
 * Transactional atomic restores with schema version validation and automatic alarm reconstruction.
 
@@ -90,7 +133,7 @@ PillRem follows strict WCAG AAA contrast standards for healthcare accessibility:
 # Output: app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Install onto Device via ADB
+### Install onto Connected Device via ADB
 ```powershell
 adb install -r app\build\outputs\apk\debug\app-debug.apk
 ```
@@ -103,11 +146,15 @@ adb install -r app\build\outputs\apk\debug\app-debug.apk
 
 ---
 
-## Releasing Updates
+## Publishing a Release
 
-To publish an update to users, simply create and push a git tag:
+To release a new version to users:
 ```powershell
-git tag v1.1.1
-git push origin v1.1.1
+git tag v1.0.0
+git push origin v1.0.0
 ```
-The automated GitHub Actions CI/CD workflow (`.github/workflows/release.yml`) will automatically compile the release APK and publish a GitHub Release with the APK attached. Running PillRem instances will detect the update and prompt users to update in-app.
+The automated GitHub Actions CI/CD workflow (`.github/workflows/release.yml`) will:
+1. Compile the optimized Release APK.
+2. Publish a GitHub Release under that tag.
+3. Attach `PillRem-v1.0.0.apk` and `PillRem-latest.apk`.
+4. Trigger in-app update notifications for all active PillRem users.
