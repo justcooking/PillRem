@@ -54,4 +54,19 @@ interface DoseRecordDao {
 
     @Query("SELECT * FROM dose_records WHERE profileId = :profileId ORDER BY scheduledAt DESC")
     suspend fun getAllDoseHistoryForProfile(profileId: Long): List<DoseRecordEntity>
+
+    @Query("SELECT * FROM dose_records WHERE medicineId = :medicineId AND status = 'pending' AND scheduledAt >= :since")
+    suspend fun getFuturePendingDosesForMedicine(medicineId: Long, since: Long): List<DoseRecordEntity>
+
+    @Query("DELETE FROM dose_records WHERE medicineId = :medicineId AND status = 'pending' AND scheduledAt >= :since")
+    suspend fun deleteFuturePendingDosesForMedicine(medicineId: Long, since: Long): Int
+
+    @Transaction
+    @Query("""
+        SELECT d.* FROM dose_records d
+        INNER JOIN medicines m ON d.medicineId = m.id
+        WHERE d.status = 'pending' AND d.reminderAt >= :since AND m.isArchived = 0
+        ORDER BY d.reminderAt ASC
+    """)
+    suspend fun getUpcomingActivePendingDoses(since: Long): List<DoseWithMedicine>
 }

@@ -6,10 +6,18 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ScheduleDao {
-    @Query("SELECT * FROM schedules WHERE profileId = :profileId AND isActive = 1")
+    @Query("""
+        SELECT s.* FROM schedules s
+        INNER JOIN medicines m ON s.medicineId = m.id
+        WHERE s.profileId = :profileId AND s.isActive = 1 AND m.isArchived = 0
+    """)
     fun getActiveSchedulesForProfile(profileId: Long): Flow<List<ScheduleEntity>>
 
-    @Query("SELECT * FROM schedules WHERE isActive = 1")
+    @Query("""
+        SELECT s.* FROM schedules s
+        INNER JOIN medicines m ON s.medicineId = m.id
+        WHERE s.isActive = 1 AND m.isArchived = 0
+    """)
     suspend fun getAllActiveSchedulesSync(): List<ScheduleEntity>
 
     @Query("SELECT * FROM schedules WHERE medicineId = :medicineId")

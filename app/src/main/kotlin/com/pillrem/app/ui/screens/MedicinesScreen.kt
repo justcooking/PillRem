@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import com.pillrem.app.data.local.AppDatabase
 import com.pillrem.app.data.local.entities.MedicineEntity
@@ -33,6 +34,7 @@ fun MedicinesScreen(
     isDark: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(0) } // 0: Active, 1: Archived
     var showAddDialog by remember { mutableStateOf(false) }
 
@@ -103,9 +105,9 @@ fun MedicinesScreen(
                             onToggleArchive = {
                                 coroutineScope.launch {
                                     if (selectedTab == 0) {
-                                        db.medicineDao().archiveMedicine(med.id)
+                                        doseEngine.archiveMedicine(context, med.id)
                                     } else {
-                                        db.medicineDao().restoreMedicine(med.id)
+                                        doseEngine.unarchiveMedicine(context, med.id)
                                     }
                                 }
                             }
@@ -166,7 +168,7 @@ fun MedicineCard(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    "${medicine.dosageAmount.toInt()} ${medicine.dosageUnit} • ${medicine.form.replaceFirstChar { it.uppercase() }}",
+                    "${com.pillrem.app.utils.DosageFormatter.formatWithUnit(medicine.dosageAmount, medicine.dosageUnit)} • ${medicine.form.replaceFirstChar { it.uppercase() }}",
                     fontSize = 13.sp,
                     color = if (isDark) DarkTextSecondary else LightTextSecondary
                 )

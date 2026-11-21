@@ -36,7 +36,8 @@ object NotificationHelper {
         doseId: Long,
         profileName: String,
         medicineName: String,
-        dosageInfo: String
+        dosageInfo: String,
+        snoozeMinutes: Int = 15
     ) {
         createNotificationChannel(context)
 
@@ -69,6 +70,7 @@ object NotificationHelper {
             action = DoseActionReceiver.ACTION_SNOOZE
             putExtra(DoseActionReceiver.EXTRA_DOSE_ID, doseId)
             putExtra(DoseActionReceiver.EXTRA_NOTIFICATION_ID, notificationId)
+            putExtra(DoseActionReceiver.EXTRA_SNOOZE_MINUTES, snoozeMinutes)
         }
         val snoozePendingIntent = PendingIntent.getBroadcast(
             context,
@@ -86,7 +88,7 @@ object NotificationHelper {
             .setAutoCancel(true)
             .setContentIntent(contentPendingIntent)
             .addAction(android.R.drawable.checkbox_on_background, "Take", takePendingIntent)
-            .addAction(android.R.drawable.ic_lock_idle_alarm, "Snooze 15m", snoozePendingIntent)
+            .addAction(android.R.drawable.ic_lock_idle_alarm, "Snooze ${snoozeMinutes}m", snoozePendingIntent)
             .build()
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

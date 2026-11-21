@@ -17,12 +17,14 @@ class DoseActionReceiver : BroadcastReceiver() {
         const val ACTION_SNOOZE = "com.pillrem.app.ACTION_SNOOZE"
         const val EXTRA_DOSE_ID = "extra_dose_id"
         const val EXTRA_NOTIFICATION_ID = "extra_notification_id"
+        const val EXTRA_SNOOZE_MINUTES = "extra_snooze_minutes"
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         val action = intent.action ?: return
         val doseId = intent.getLongExtra(EXTRA_DOSE_ID, 0L)
         val notificationId = intent.getIntExtra(EXTRA_NOTIFICATION_ID, 0)
+        val passedSnoozeMinutes = intent.getIntExtra(EXTRA_SNOOZE_MINUTES, 0)
 
         if (doseId == 0L) return
 
@@ -38,13 +40,21 @@ class DoseActionReceiver : BroadcastReceiver() {
                         NotificationHelper.cancelNotification(context, notificationId)
                     }
                     ACTION_SNOOZE -> {
-                        doseEngine.snoozeDose(doseId, 15)
+                        val doseWithMed = db.doseRecordDao().getDoseWithMedicineById(doseId)
+                        val effectiveSnoozeMinutes = if (passedSnoozeMinutes > 0) {
+                            passedSnoozeMinutes
+                        } else if (doseWithMed != null) {
+                            db.profileDao().getSettingsForProfileSync(doseWithMed.dose.profileId)?.defaultSnoozeMinutes ?: 15
+                        } else {
+                            15
+                        }
+
+                        doseEngine.snoozeDose(doseId, effectiveSnoozeMinutes)
                         NotificationHelper.cancelNotification(context, notificationId)
 
-                        val doseWithMed = db.doseRecordDao().getDoseWithMedicineById(doseId)
                         if (doseWithMed != null) {
                             val profile = db.profileDao().getAllProfilesSync().firstOrNull { it.id == doseWithMed.dose.profileId }
-                            val nextTrigger = System.currentTimeMillis() + (15 * 60 * 1000L)
+                            val nextTrigger = System.currentTimeMillis() + (effectiveSnoozeMinutes * 60 * 1000L)
 
                             AlarmScheduler.scheduleExactAlarm(
                                 context = context,
@@ -53,7 +63,11 @@ class DoseActionReceiver : BroadcastReceiver() {
                                 doseId = doseId,
                                 profileName = profile?.name ?: "Patient",
                                 medicineName = doseWithMed.medicine.name,
-                                dosageInfo = "${doseWithMed.medicine.dosageAmount.toInt()} ${doseWithMed.medicine.dosageUnit}"
+                                dosageInfo = com.pillrem.app.utils.DosageFormatter.formatWithUnit(
+                                    doseWithMed.medicine.dosageAmount,
+                                    doseWithMed.medicine.dosageUnit
+                                ),
+                                snoozeMinutes = effectiveSnoozeMinutes
                             )
                         }
                     }

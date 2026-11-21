@@ -24,31 +24,8 @@ class BootReceiver : BroadcastReceiver() {
 
             CoroutineScope(Dispatchers.IO).launch {
                 try {
-                    // Pre-generate rolling doses
-                    doseEngine.generateRollingDoses(daysAhead = 7)
-
-                    // Reschedule pending alarms for today and future
-                    val now = System.currentTimeMillis()
-                    val profiles = db.profileDao().getAllProfilesSync()
-
-                    for (profile in profiles) {
-                        val endOfRange = now + (7 * 24 * 60 * 60 * 1000L)
-                        val doses = db.doseRecordDao().getDosesForProfileRangeSync(profile.id, now, endOfRange)
-
-                        for (d in doses) {
-                            if (d.dose.status == "pending" && d.dose.reminderAt > now) {
-                                AlarmScheduler.scheduleExactAlarm(
-                                    context = context,
-                                    triggerEpochMs = d.dose.reminderAt,
-                                    notificationId = d.dose.notificationId,
-                                    doseId = d.dose.id,
-                                    profileName = profile.name,
-                                    medicineName = d.medicine.name,
-                                    dosageInfo = "${d.medicine.dosageAmount.toInt()} ${d.medicine.dosageUnit}"
-                                )
-                            }
-                        }
-                    }
+                    // Shared generation and alarm reconciliation on reboot or timezone shift
+                    doseEngine.reconcileAndScheduleAlarms(context)
                 } finally {
                     pendingResult.finish()
                 }

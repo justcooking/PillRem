@@ -137,7 +137,7 @@ fun HistoryScreen(
                                     fontSize = 16.sp
                                 )
                                 Text(
-                                    "${item.medicine.dosageAmount.toInt()} ${item.medicine.dosageUnit} • ${timeFormat.format(Date(dose.scheduledAt))}",
+                                    "${com.pillrem.app.utils.DosageFormatter.formatWithUnit(item.medicine.dosageAmount, item.medicine.dosageUnit)} • ${timeFormat.format(Date(dose.scheduledAt))}",
                                     fontSize = 13.sp,
                                     color = if (isDark) DarkTextSecondary else LightTextSecondary
                                 )

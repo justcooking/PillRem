@@ -26,9 +26,9 @@ class PillRemApplication : Application() {
             val profiles = db.profileDao().getAllProfilesSync()
             if (profiles.isEmpty()) {
                 seedInitialData(db, doseEngine)
-            } else {
-                doseEngine.generateRollingDoses(daysAhead = 7)
             }
+            // Shared generation and alarm reconciliation on app start
+            doseEngine.reconcileAndScheduleAlarms(this@PillRemApplication)
         }
     }
 

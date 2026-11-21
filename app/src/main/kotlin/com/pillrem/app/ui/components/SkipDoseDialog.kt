@@ -36,7 +36,7 @@ fun SkipDoseDialog(
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(
-                    "Are you sure you want to skip ${item.medicine.name} (${item.medicine.dosageAmount.toInt()} ${item.medicine.dosageUnit})?",
+                    "Are you sure you want to skip ${item.medicine.name} (${com.pillrem.app.utils.DosageFormatter.formatWithUnit(item.medicine.dosageAmount, item.medicine.dosageUnit)})?",
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Text(

@@ -27,6 +27,9 @@ class AutoMissedWorker(
             }
         }
 
+        // Replenish 7-day rolling window and ensure upcoming alarms are scheduled
+        doseEngine.reconcileAndScheduleAlarms(applicationContext)
+
         return Result.success()
     }
 

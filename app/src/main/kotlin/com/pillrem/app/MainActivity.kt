@@ -528,7 +528,7 @@ fun DoseCard(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(med.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Text(
-                        "${med.dosageAmount.toInt()} ${med.dosageUnit} • ${med.instructions ?: ""}",
+                        "${com.pillrem.app.utils.DosageFormatter.formatWithUnit(med.dosageAmount, med.dosageUnit)} • ${med.instructions ?: ""}",
                         fontSize = 13.sp,
                         color = if (isDark) DarkTextSecondary else LightTextSecondary
                     )

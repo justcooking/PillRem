@@ -16,7 +16,8 @@ object AlarmScheduler {
         doseId: Long,
         profileName: String,
         medicineName: String,
-        dosageInfo: String
+        dosageInfo: String,
+        snoozeMinutes: Int = 15
     ) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -26,6 +27,7 @@ object AlarmScheduler {
             putExtra(AlarmReceiver.EXTRA_PROFILE_NAME, profileName)
             putExtra(AlarmReceiver.EXTRA_MEDICINE_NAME, medicineName)
             putExtra(AlarmReceiver.EXTRA_DOSAGE_INFO, dosageInfo)
+            putExtra(AlarmReceiver.EXTRA_SNOOZE_MINUTES, snoozeMinutes)
         }
 
         val pendingIntent = PendingIntent.getBroadcast(
