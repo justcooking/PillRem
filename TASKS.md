@@ -8,30 +8,30 @@
 
 ---
 
-## Milestone 1: Core Architecture, Database & Business Logic Engine
-*Goal: Complete, tested, offline-first data layer, multi-profile isolation, and dose state machine.*
-- [x] Flutter project setup & dependencies (Drift, Riverpod, GoRouter, Notifications)
-- [x] Clinical theme definition (Light & Dark mode from approved palette)
-- [x] Drift SQLite schema (Profiles, ProfileSettings, AppSettings, Medicines, Schedules, DoseRecords)
-- [x] DAOs with cascade deletes, transactions, and reactive streams
-- [x] Multi-profile isolation and switching logic
+## Milestone 1: Native Android Core Engine & SQLite Database (Room)
+*Goal: Native Kotlin setup, Room database schema, multi-profile isolation, and dose state machine.*
+- [x] Native Android Kotlin project scaffold with Jetpack Compose & Gradle KTS
+- [x] Clinical Blue Theme definition in Jetpack Compose (`Color.kt`, `Theme.kt`)
+- [x] Room SQLite Entities (Profiles, ProfileSettings, AppSettings, Medicines, Schedules, DoseRecords)
+- [x] Room DAOs with Foreign Key CASCADE deletions and reactive Kotlin `Flow`s
+- [x] Multi-profile isolation and atomic profile switching
 - [x] Dose generation engine (idempotent rolling 7-day window)
-- [x] Dose state machine logic (Take, Snooze with grace-period invariance, Skip with reason, Auto-Missed, Missed Correction)
-- [x] Unit tests for database, state transitions, and adherence formulas (100% passing)
+- [x] Dose state machine (Take, Snooze with grace-period invariance, Skip with reason, Auto-Missed, Correct Missed)
+- [x] Unit test suite for Room database, dose state machine, and adherence math
 
-## Milestone 2: Android Notification & Background Reliability Engine
+## Milestone 2: Native Android Exact Alarms & Notification Reliability
 *Goal: Rock-solid alarms and notifications that trigger across reboots, app kills, and Doze mode.*
-- [ ] Android permission orchestration (`POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, battery optimization guide)
-- [ ] Notification Service (high-importance channel, clinical sound, custom payload)
-- [ ] Headless background action handler (`@pragma('vm:entry-point')`) for lock-screen `[Take]` and `[Snooze]` actions
-- [ ] Alarm rescheduling on device boot (`RECEIVE_BOOT_COMPLETED`) and timezone/clock changes
-- [ ] Verification on Android device / emulator
+- [x] Android permissions orchestration (`POST_NOTIFICATIONS`, `SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM`)
+- [x] Notification Service & High-Importance Channel with action buttons (`[Take]`, `[Snooze 15m]`)
+- [x] Direct `BroadcastReceiver` (`DoseActionReceiver`) for instant headless lock-screen actions
+- [x] Boot & Timezone Receiver (`BootReceiver`) to automatically reschedule alarms on device restart
+- [x] Verification on physical Android device (`A059`)
 
 ## Milestone 3: Presentation Layer & Complete User Flow
 *Goal: Intuitive, accessible clinical UI with zero friction.*
-- [ ] Top Bar with active profile avatar and quick profile switcher
-- [ ] **Today Screen:** Daily medication checklist (Morning / Afternoon / Evening / Night) with instant Take/Snooze/Skip controls
-- [ ] **Medicine Cabinet Screen:** Medicine list, dosage form badges, inventory/stock tracking, and schedule builder
-- [ ] **History & Adherence Screen:** Calendar view, accurate adherence rate metric, and missed-dose correction modal
-- [ ] **Settings Screen:** Theme selector (Light / Dark / System), profile-specific grace periods and snooze intervals
-- [ ] End-to-end integration testing and final polish
+- [x] Top App Bar with active profile avatar and quick profile switcher
+- [x] **Today Screen:** Daily medication checklist with instant Take/Snooze/Skip controls
+- [x] **Adherence Banner:** Adherence score (% taken vs missed, excluding skipped)
+- [x] Light / Dark theme toggle
+- [ ] Comprehensive Medicine Cabinet & Schedule Builder screens
+- [ ] History & Analytics calendar view with missed-dose correction dialog
