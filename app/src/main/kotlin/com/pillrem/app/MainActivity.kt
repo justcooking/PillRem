@@ -25,6 +25,7 @@ import com.pillrem.app.data.models.DoseWithMedicine
 import com.pillrem.app.domain.AdherenceCalculator
 import com.pillrem.app.domain.DoseEngine
 import com.pillrem.app.ui.components.PermissionBanner
+import com.pillrem.app.ui.components.SkipDoseDialog
 import com.pillrem.app.ui.navigation.NavItem
 import com.pillrem.app.ui.screens.HistoryScreen
 import com.pillrem.app.ui.screens.MedicinesScreen
@@ -223,6 +224,7 @@ fun TodayTabContent(
     isDarkTheme: Boolean
 ) {
     val coroutineScope = rememberCoroutineScope()
+    var doseToSkip by remember { mutableStateOf<DoseWithMedicine?>(null) }
 
     // Start & End of today
     val calendar = Calendar.getInstance().apply {
@@ -307,11 +309,8 @@ fun TodayTabContent(
                     onTake = {
                         coroutineScope.launch { doseEngine.takeDose(item.dose.id) }
                     },
-                    onSnooze = {
-                        coroutineScope.launch { doseEngine.snoozeDose(item.dose.id, 15) }
-                    },
                     onSkip = {
-                        coroutineScope.launch { doseEngine.skipDose(item.dose.id, "Patient skipped") }
+                        doseToSkip = item
                     }
                 )
             }
@@ -328,6 +327,15 @@ fun TodayTabContent(
             }
             Spacer(Modifier.height(16.dp))
         }
+    }
+
+    doseToSkip?.let { targetDose ->
+        SkipDoseDialog(
+            item = targetDose,
+            doseEngine = doseEngine,
+            onDismiss = { doseToSkip = null },
+            onSkipped = { doseToSkip = null }
+        )
     }
 }
 
@@ -393,7 +401,6 @@ fun DoseCard(
     item: DoseWithMedicine,
     isDark: Boolean,
     onTake: () -> Unit,
-    onSnooze: () -> Unit,
     onSkip: () -> Unit
 ) {
     val dose = item.dose
@@ -480,9 +487,6 @@ fun DoseCard(
                 Spacer(Modifier.weight(1f))
 
                 if (dose.status != "taken" && dose.status != "skipped") {
-                    TextButton(onClick = onSnooze) {
-                        Text("Snooze", fontSize = 13.sp)
-                    }
                     TextButton(onClick = onSkip) {
                         Text("Skip", fontSize = 13.sp)
                     }
