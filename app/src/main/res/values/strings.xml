@@ -1,3 +1,172 @@
 <resources>
     <string name="app_name">PillRem</string>
+
+    <!-- Navigation -->
+    <string name="nav_today">Today</string>
+    <string name="nav_medicines">Medicines</string>
+    <string name="nav_history">History</string>
+    <string name="nav_settings">Settings</string>
+    <string name="profile_prefix">Profile: %1$s</string>
+    <string name="toggle_theme">Toggle Theme</string>
+    <string name="switch_profile">Switch Profile</string>
+
+    <!-- Today Tab -->
+    <string name="todays_medications">Today\'s Medication Doses</string>
+    <string name="doses_scheduled_count">%1$d scheduled</string>
+    <string name="no_doses_today">No doses scheduled for today.</string>
+    <string name="adherence_score">Adherence Score</string>
+    <string name="stat_taken">Taken</string>
+    <string name="stat_missed">Missed</string>
+    <string name="stat_skipped">Skipped</string>
+    <string name="action_take">Take</string>
+    <string name="action_skip">Skip</string>
+    <string name="status_taken_at">Taken at %1$s</string>
+    <string name="status_skipped_reason">Skipped: %1$s</string>
+    <string name="status_snoozed_count">Snoozed %1$dx</string>
+    <string name="app_footer">PillRem Native Android • Kotlin &amp; Compose • SQLite Room</string>
+    <string name="update_available_title">Update Available: PillRem %1$s</string>
+    <string name="update_available_subtitle">Tap to review changelog &amp; install</string>
+    <string name="btn_update">Update</string>
+
+    <!-- Medicines Tab -->
+    <string name="tab_active">Active (%1$d)</string>
+    <string name="tab_archived">Archived (%1$d)</string>
+    <string name="no_active_medicines">No active medicines. Tap + to add one.</string>
+    <string name="no_archived_medicines">No archived medicines.</string>
+    <string name="add_medicine">Add Medicine</string>
+    <string name="action_archive">Archive</string>
+    <string name="action_restore">Restore</string>
+    <string name="schedule_no_reminders">No reminders set</string>
+    <string name="schedule_daily_at">Daily at %1$s</string>
+    <string name="schedule_every_days_at">Every %1$d days at %2$s</string>
+    <string name="schedule_weekly_at">%1$s at %2$s</string>
+    <string name="schedule_weekly_interval">Every %1$d wks (%2$s) at %3$s</string>
+    <string name="schedule_monthly_at">Monthly at %1$s</string>
+    <string name="schedule_every_months_at">Every %1$d months at %2$s</string>
+    <string name="schedule_as_needed">As needed</string>
+
+    <!-- Add/Edit Medicine Dialog -->
+    <string name="dialog_add_medicine_title">Add Medication</string>
+    <string name="med_name_label">Medicine Name *</string>
+    <string name="med_name_error">Medicine name is required</string>
+    <string name="med_dosage_label">Dosage *</string>
+    <string name="med_dosage_error">Enter valid dosage > 0</string>
+    <string name="med_unit_label">Unit</string>
+    <string name="med_form_label">Form</string>
+    <string name="med_instructions_label">Clinical Instructions</string>
+    <string name="repeating_cadence">Repeating Cadence</string>
+    <string name="cadence_every">Every</string>
+    <string name="cadence_label">Cadence</string>
+    <string name="select_days_of_week">Select Days of Week:</string>
+    <string name="dose_times_header">Dose Times (%1$d× Daily)</string>
+    <string name="add_another_dose_time">Add Another Dose Time</string>
+    <string name="hour_label">Hour</string>
+    <string name="min_label">Min</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="error_interval_min">Interval must be at least 1</string>
+    <string name="error_at_least_one_dose">At least one dose time required</string>
+
+    <!-- History Tab -->
+    <string name="filter_all">All (%1$d)</string>
+    <string name="filter_taken">Taken (%1$d)</string>
+    <string name="filter_missed">Missed (%1$d)</string>
+    <string name="filter_skipped">Skipped (%1$d)</string>
+    <string name="no_dose_records">No dose records found.</string>
+    <string name="tap_to_mark_taken">Tap to mark as taken</string>
+
+    <!-- Settings Tab -->
+    <string name="section_profiles">Profiles &amp; Accounts</string>
+    <string name="btn_add_profile">Add New Profile</string>
+    <string name="btn_switch">Switch</string>
+    <string name="section_language">App Language</string>
+    <string name="language_description">Select your preferred display language</string>
+    <string name="section_notifications">Notification Preferences</string>
+    <string name="grace_period_title">Missed Dose Grace Period</string>
+    <string name="grace_period_desc">Unresolved doses past this deadline are automatically marked as missed.</string>
+    <string name="snooze_duration_title">Default Snooze Duration</string>
+    <string name="snooze_duration_desc">Snoozing advances the alarm reminder while strictly preserving the original grace period deadline.</string>
+    <string name="minutes_format">%1$d minutes</string>
+    <string name="section_permissions">Alarm &amp; System Permissions</string>
+    <string name="perm_notif_title">Notifications</string>
+    <string name="perm_notif_granted">Granted — alerts will appear</string>
+    <string name="perm_notif_denied">Disabled — reminders blocked</string>
+    <string name="perm_exact_title">Exact Alarms</string>
+    <string name="perm_exact_allowed">Allowed — exact-time trigger</string>
+    <string name="perm_exact_denied">Restricted by system</string>
+    <string name="perm_battery_title">Battery Optimization Exemption</string>
+    <string name="perm_battery_unrestricted">Unrestricted — won\'t be killed in Doze</string>
+    <string name="perm_battery_optimized">Optimized (recommended to unrestrict)</string>
+    <string name="btn_fix">Fix</string>
+    <string name="btn_allow">Allow</string>
+    <string name="btn_unrestrict">Unrestrict</string>
+    <string name="section_appearance">Appearance</string>
+    <string name="dark_theme_title">Dark Theme</string>
+    <string name="dark_theme_desc">Clinical high-contrast dark palette</string>
+    <string name="section_backup">Data Backup &amp; Restore</string>
+    <string name="backup_desc">PillRem is 100% offline. Export your medications, schedules, and history as a JSON file to keep a private backup or transfer to another phone.</string>
+    <string name="btn_export_json">Export JSON</string>
+    <string name="btn_import_json">Import JSON</string>
+    <string name="section_updates">App Updates &amp; System</string>
+    <string name="version_format">PillRem v%1$s</string>
+    <string name="build_format">Build %1$d • Over-The-Air GitHub Releases</string>
+    <string name="updates_desc">PillRem supports direct over-the-air updates. Check for releases directly from GitHub without third-party app stores or cloud tracking.</string>
+    <string name="btn_check_updates">Check for Updates</string>
+    <string name="checking_updates">Checking…</string>
+    <string name="offline_privacy_footer">PillRem • 100% Offline &amp; Private • Zero Trackers</string>
+
+    <!-- Onboarding Flow -->
+    <string name="onboarding_welcome_title">Welcome to PillRem</string>
+    <string name="onboarding_welcome_desc">Clinical-grade, offline-first medication reminders and adherence tracking designed for safety and privacy.</string>
+    <string name="prop_offline_title">100% Offline &amp; Private</string>
+    <string name="prop_offline_desc">Zero cloud accounts, zero telemetry, zero analytics. Your sensitive health data never leaves your physical device.</string>
+    <string name="prop_exact_title">Exact Waking Reminders</string>
+    <string name="prop_exact_desc">Engineered with Android exact alarms to ring reliably even during deep overnight battery Doze mode.</string>
+    <string name="prop_adherence_title">Accurate Adherence Math</string>
+    <string name="prop_adherence_desc">Clinical scoring that tracks missed vs. taken doses without penalizing doctor-advised skipped doses.</string>
+    <string name="btn_get_started">Get Started</string>
+
+    <string name="step_permissions_title">Step 1 of 3: Permissions</string>
+    <string name="step_permissions_headline">Enable Critical System Permissions</string>
+    <string name="step_permissions_desc">To ensure you never miss critical doses, Android requires permission to ring alarms while your phone is locked or idle.</string>
+    <string name="perm_card_notif_desc">Shows heads-up lock screen reminders with quick Take &amp; Snooze buttons.</string>
+    <string name="perm_card_exact_desc">Wakes the device at the exact scheduled minute rather than an approximate window.</string>
+    <string name="perm_card_battery_desc">Prevents Android battery saver from killing or delaying morning or overnight reminders.</string>
+    <string name="btn_grant">Grant</string>
+    <string name="btn_next_profile">Next: Profile Setup</string>
+
+    <string name="step_profile_title">Step 2 of 3: Profile</string>
+    <string name="step_profile_headline">Create Your Profile</string>
+    <string name="step_profile_desc">PillRem allows managing multiple profiles (e.g. self, child, or parent). Enter the first profile\'s details below.</string>
+    <string name="profile_name_hint">Profile Name (e.g. Sarah, Self, Dad) *</string>
+    <string name="profile_name_error">Please enter your name</string>
+    <string name="avatar_badge_color">Avatar Badge Color:</string>
+    <string name="clinical_timings">Clinical Reminder Timings</string>
+    <string name="btn_next_medication">Next: First Medication</string>
+
+    <string name="step_med_title">Step 3 of 3: First Medication</string>
+    <string name="step_med_headline">Add Your First Medication</string>
+    <string name="step_med_desc">Add a medication to set up your first alarm, or skip and add medications anytime from your Medicine Cabinet.</string>
+    <string name="med_name_optional">Medication Name (Optional)</string>
+    <string name="btn_finish_setup">Finish Setup</string>
+    <string name="btn_save_and_start">Save &amp; Start Using PillRem</string>
+    <string name="btn_skip_med_later">I\'ll Add Medications Later</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_skip_title">Skip Medication Dose</string>
+    <string name="dialog_skip_question">Are you sure you want to skip %1$s (%2$s)?</string>
+    <string name="dialog_skip_desc">Skipped doses are excluded from adherence penalty calculations.</string>
+    <string name="skip_reason_label">Reason for skipping (optional):</string>
+    <string name="reason_fasting">Fasting for medical test</string>
+    <string name="reason_doctor">Doctor advised to pause</string>
+    <string name="reason_nausea">Nausea / feeling unwell</string>
+    <string name="reason_out_of_stock">Medication out of stock</string>
+    <string name="reason_other">Other</string>
+    <string name="specify_reason">Specify reason</string>
+    <string name="btn_confirm_skip">Confirm Skip</string>
+    <string name="dialog_correct_title">Correct Missed Dose</string>
+    <string name="dialog_correct_question">Did you take %1$s (%2$s)?</string>
+    <string name="scheduled_for">Scheduled for: %1$s</string>
+    <string name="dialog_correct_desc">This will change the status from Missed to Taken and adjust your adherence score accordingly.</string>
+    <string name="btn_mark_as_taken">Mark as Taken</string>
 </resources>

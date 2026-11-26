@@ -1,0 +1,172 @@
+<resources>
+    <string name="app_name">PillRem</string>
+
+    <!-- Navigation -->
+    <string name="nav_today">आज</string>
+    <string name="nav_medicines">दवाइयाँ</string>
+    <string name="nav_history">इतिहास</string>
+    <string name="nav_settings">सेटिंग्स</string>
+    <string name="profile_prefix">प्रोफ़ाइल: %1$s</string>
+    <string name="toggle_theme">थीम बदलें</string>
+    <string name="switch_profile">प्रोफ़ाइल बदलें</string>
+
+    <!-- Today Tab -->
+    <string name="todays_medications">आज की निर्धारित दवाइयाँ</string>
+    <string name="doses_scheduled_count">%1$d निर्धारित</string>
+    <string name="no_doses_today">आज कोई खुराक निर्धारित नहीं है।</string>
+    <string name="adherence_score">नियमितता स्कोर</string>
+    <string name="stat_taken">ली गई</string>
+    <string name="stat_missed">छूट गई</string>
+    <string name="stat_skipped">छोड़ी गई</string>
+    <string name="action_take">दवा ली</string>
+    <string name="action_skip">छोड़ें</string>
+    <string name="status_taken_at">%1$s बजे ली गई</string>
+    <string name="status_skipped_reason">छोड़ी गई: %1$s</string>
+    <string name="status_snoozed_count">%1$d बार स्नूज़ किया</string>
+    <string name="app_footer">PillRem नेटिव एंड्रॉइड • कोटलिन और कंपोज़ • रूम डेटाबेस</string>
+    <string name="update_available_title">नया अपडेट उपलब्ध: PillRem %1$s</string>
+    <string name="update_available_subtitle">विवरण देखने और इंस्टॉल करने के लिए टैप करें</string>
+    <string name="btn_update">अपडेट करें</string>
+
+    <!-- Medicines Tab -->
+    <string name="tab_active">सक्रिय (%1$d)</string>
+    <string name="tab_archived">संग्रहीत (%1$d)</string>
+    <string name="no_active_medicines">कोई सक्रिय दवा नहीं है। नई दवा जोड़ने के लिए + दबाएं।</string>
+    <string name="no_archived_medicines">कोई संग्रहीत दवा नहीं है।</string>
+    <string name="add_medicine">दवा जोड़ें</string>
+    <string name="action_archive">संग्रहीत करें</string>
+    <string name="action_restore">पुनर्स्थापित करें</string>
+    <string name="schedule_no_reminders">कोई रिमाइंडर सेट नहीं है</string>
+    <string name="schedule_daily_at">प्रतिदिन %1$s बजे</string>
+    <string name="schedule_every_days_at">हर %1$d दिन में %2$s बजे</string>
+    <string name="schedule_weekly_at">%1$s को %2$s बजे</string>
+    <string name="schedule_weekly_interval">हर %1$d सप्ताह (%2$s) को %3$s बजे</string>
+    <string name="schedule_monthly_at">मासिक %1$s बजे</string>
+    <string name="schedule_every_months_at">हर %1$d महीने में %2$s बजे</string>
+    <string name="schedule_as_needed">आवश्यकतानुसार</string>
+
+    <!-- Add/Edit Medicine Dialog -->
+    <string name="dialog_add_medicine_title">दवा जोड़ें</string>
+    <string name="med_name_label">दवा का नाम *</string>
+    <string name="med_name_error">दवा का नाम आवश्यक है</string>
+    <string name="med_dosage_label">खुराक की मात्रा *</string>
+    <string name="med_dosage_error">मान्य खुराक दर्ज करें (> 0)</string>
+    <string name="med_unit_label">इकाई</string>
+    <string name="med_form_label">प्रकार</string>
+    <string name="med_instructions_label">निर्देश</string>
+    <string name="repeating_cadence">दोहराने का क्रम</string>
+    <string name="cadence_every">प्रत्येक</string>
+    <string name="cadence_label">अवधि</string>
+    <string name="select_days_of_week">सप्ताह के दिन चुनें:</string>
+    <string name="dose_times_header">दवा का समय (%1$d× प्रतिदिन)</string>
+    <string name="add_another_dose_time">अन्य समय जोड़ें</string>
+    <string name="hour_label">घंटा</string>
+    <string name="min_label">मिनट</string>
+    <string name="btn_save">सहेजें</string>
+    <string name="btn_cancel">रद्द करें</string>
+    <string name="error_interval_min">अंतराल कम से कम 1 होना चाहिए</string>
+    <string name="error_at_least_one_dose">कम से कम एक समय निर्धारित करना आवश्यक है</string>
+
+    <!-- History Tab -->
+    <string name="filter_all">सभी (%1$d)</string>
+    <string name="filter_taken">ली गई (%1$d)</string>
+    <string name="filter_missed">छूट गई (%1$d)</string>
+    <string name="filter_skipped">छोड़ी गई (%1$d)</string>
+    <string name="no_dose_records">कोई रिकॉर्ड नहीं मिला।</string>
+    <string name="tap_to_mark_taken">ली गई चिह्नित करने के लिए टैप करें</string>
+
+    <!-- Settings Tab -->
+    <string name="section_profiles">प्रोफ़ाइल और खाते</string>
+    <string name="btn_add_profile">नई प्रोफ़ाइल जोड़ें</string>
+    <string name="btn_switch">बदलें</string>
+    <string name="section_language">ऐप की भाषा</string>
+    <string name="language_description">अपनी पसंदीदा भाषा चुनें</string>
+    <string name="section_notifications">सूचना प्राथमिकताएं</string>
+    <string name="grace_period_title">छूटी खुराक की अनुग्रह अवधि</string>
+    <string name="grace_period_desc">इस समय सीमा के बाद अनसुलझी खुराक को स्वचालित रूप से छूटा हुआ माना जाएगा।</string>
+    <string name="snooze_duration_title">डिफ़ॉल्ट स्नूज़ अवधि</string>
+    <string name="snooze_duration_desc">स्नूज़ करने पर मूल समय सीमा बदले बिना अलार्म रिमाइंडर आगे बढ़ता है।</string>
+    <string name="minutes_format">%1$d मिनट</string>
+    <string name="section_permissions">अलार्म और सिस्टम अनुमतियाँ</string>
+    <string name="perm_notif_title">सूचनाएं (Notifications)</string>
+    <string name="perm_notif_granted">सक्रिय — रिमाइंडर समय पर दिखाई देंगे</string>
+    <string name="perm_notif_denied">अवरुद्ध — रिमाइंडर नहीं दिखेंगे</string>
+    <string name="perm_exact_title">सटीक अलार्म (Exact Alarms)</string>
+    <string name="perm_exact_allowed">अनुमति प्राप्त — सटीक समय पर अलार्म</string>
+    <string name="perm_exact_denied">सिस्टम द्वारा प्रतिबंधित</string>
+    <string name="perm_battery_title">बैटरी अनुकूलन छूट</string>
+    <string name="perm_battery_unrestricted">अप्रतिबंधित — बैकग्राउंड में अलार्म बंद नहीं होगा</string>
+    <string name="perm_battery_optimized">अनुकूलित (अप्रतिबंधित करने की सलाह दी जाती है)</string>
+    <string name="btn_fix">सुधारें</string>
+    <string name="btn_allow">अनुमति दें</string>
+    <string name="btn_unrestrict">हटाएं</string>
+    <string name="section_appearance">दिखावट</string>
+    <string name="dark_theme_title">डार्क थीम</string>
+    <string name="dark_theme_desc">आंखों के अनुकूल हाई-कंट्रास्ट डार्क मोड</string>
+    <string name="section_backup">डेटा बैकअप और पुनर्स्थापना</string>
+    <string name="backup_desc">PillRem 100% ऑफ़लाइन है। अपना स्वास्थ्य डेटा सुरक्षित रखने या दूसरे फोन में ले जाने के लिए JSON फ़ाइल निर्यात करें।</string>
+    <string name="btn_export_json">JSON निर्यात करें</string>
+    <string name="btn_import_json">JSON आयात करें</string>
+    <string name="section_updates">ऐप अपडेट और सिस्टम</string>
+    <string name="version_format">PillRem v%1$s</string>
+    <string name="build_format">बिल्ड %1$d • सीधे GitHub रिलीज़ अपडेट</string>
+    <string name="updates_desc">PillRem बिना किसी क्लाउड ट्रैकिंग के सीधे GitHub से ओवर-द-एयर अपडेट डाउनलोड करने का समर्थन करता है।</string>
+    <string name="btn_check_updates">अपडेट जांचें</string>
+    <string name="checking_updates">जांच जारी है…</string>
+    <string name="offline_privacy_footer">PillRem • 100% ऑफ़लाइन और निजी • कोई ट्रैकिंग नहीं</string>
+
+    <!-- Onboarding Flow -->
+    <string name="onboarding_welcome_title">PillRem में आपका स्वागत है</string>
+    <string name="onboarding_welcome_desc">सुरक्षा और पूर्ण गोपनीयता के लिए डिज़ाइन किया गया ऑफ़लाइन दवा रिमाइंडर और नियमितता ट्रैकर।</string>
+    <string name="prop_offline_title">100% ऑफ़लाइन और सुरक्षित</string>
+    <string name="prop_offline_desc">कोई क्लाउड खाता नहीं, कोई डेटा ट्रैकिंग नहीं। आपका संवेदनशील स्वास्थ्य डेटा आपके डिवाइस पर ही रहता है।</string>
+    <string name="prop_exact_title">सटीक समय पर अलार्म</string>
+    <string name="prop_exact_desc">एंड्रॉइड सटीक अलार्म के साथ निर्मित, ताकि फोन लॉक या स्लीप मोड में होने पर भी अलार्म समय पर बजे।</string>
+    <string name="prop_adherence_title">सटीक नियमितता स्कोर</string>
+    <string name="prop_adherence_desc">क्लिनिकल स्कोरिंग जो छूटी और ली गई खुराक को मापता है और डॉक्टर की सलाह पर छोड़ी गई खुराक पर अंक नहीं काटता।</string>
+    <string name="btn_get_started">शुरू करें</string>
+
+    <string name="step_permissions_title">चरण 1: अनुमतियाँ</string>
+    <string name="step_permissions_headline">आवश्यक सिस्टम अनुमतियाँ सक्षम करें</string>
+    <string name="step_permissions_desc">यह सुनिश्चित करने के लिए कि आपकी कोई खुराक न छूटे, फोन लॉक होने पर भी अलार्म बजाने की अनुमति आवश्यक है।</string>
+    <string name="perm_card_notif_desc">लॉक स्क्रीन पर त्वरित दवा लेने और स्नूज़ बटन के साथ रिमाइंडर दिखाता है।</string>
+    <string name="perm_card_exact_desc">अनुमानित समय के बजाय ठीक निर्धारित मिनट पर डिवाइस को जगाता है।</string>
+    <string name="perm_card_battery_desc">सिस्टम बैटरी सेवर को सुबह या रात के महत्वपूर्ण अलार्म बंद करने से रोकता है।</string>
+    <string name="btn_grant">अनुमति दें</string>
+    <string name="btn_next_profile">आगे: प्रोफ़ाइल सेटअप</string>
+
+    <string name="step_profile_title">चरण 2: प्रोफ़ाइल</string>
+    <string name="step_profile_headline">अपनी प्रोफ़ाइल बनाएं</string>
+    <string name="step_profile_desc">PillRem एकाधिक प्रोफ़ाइल (जैसे स्वयं, बच्चे या माता-पिता) का प्रबंधन कर सकता है। पहला नाम नीचे दर्ज करें।</string>
+    <string name="profile_name_hint">प्रोफ़ाइल का नाम (जैसे स्वयं, पिताजी) *</string>
+    <string name="profile_name_error">कृपया अपना नाम दर्ज करें</string>
+    <string name="avatar_badge_color">अवतार रंग चुनें:</string>
+    <string name="clinical_timings">रिमाइंडर समय निर्धारण</string>
+    <string name="btn_next_medication">आगे: पहली दवा</string>
+
+    <string name="step_med_title">चरण 3: पहली दवा</string>
+    <string name="step_med_headline">अपनी पहली दवा जोड़ें</string>
+    <string name="step_med_desc">अलार्म सेट करने के लिए दवा जोड़ें, या बाद में अपनी मेडिसिन कैबिनेट से कभी भी जोड़ सकते हैं।</string>
+    <string name="med_name_optional">दवा का नाम (वैकल्पिक)</string>
+    <string name="btn_finish_setup">सेटअप पूरा करें</string>
+    <string name="btn_save_and_start">सहेजें और शुरू करें</string>
+    <string name="btn_skip_med_later">दवा बाद में जोड़ेंगे</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_skip_title">दवा की खुराक छोड़ें</string>
+    <string name="dialog_skip_question">क्या आप वाकई %1$s (%2$s) को छोड़ना चाहते हैं?</string>
+    <string name="dialog_skip_desc">छोड़ी गई खुराक को नियमितता स्कोर के दंड से बाहर रखा जाता है।</string>
+    <string name="skip_reason_label">छोड़ने का कारण (वैकल्पिक):</string>
+    <string name="reason_fasting">चिकित्सा परीक्षण के लिए उपवास</string>
+    <string name="reason_doctor">डॉक्टर ने रोकने की सलाह दी</string>
+    <string name="reason_nausea">मतली / अस्वस्थ महसूस करना</string>
+    <string name="reason_out_of_stock">दवा समाप्त हो गई है</string>
+    <string name="reason_other">अन्य</string>
+    <string name="specify_reason">कारण निर्दिष्ट करें</string>
+    <string name="btn_confirm_skip">छोड़ने की पुष्टि करें</string>
+    <string name="dialog_correct_title">छूटी दवा को सही करें</string>
+    <string name="dialog_correct_question">क्या आपने %1$s (%2$s) पहले ले ली थी?</string>
+    <string name="scheduled_for">निर्धारित समय: %1$s</string>
+    <string name="dialog_correct_desc">यह स्थिति को छूटी हुई से ली गई में बदल देगा और आपके नियमितता स्कोर को अपडेट कर देगा।</string>
+    <string name="btn_mark_as_taken">दवा ली गई चिह्नित करें</string>
+</resources>

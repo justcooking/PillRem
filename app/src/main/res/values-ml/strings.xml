@@ -1,0 +1,172 @@
+<resources>
+    <string name="app_name">PillRem</string>
+
+    <!-- Navigation -->
+    <string name="nav_today">ഇന്ന്</string>
+    <string name="nav_medicines">മരുന്നുകൾ</string>
+    <string name="nav_history">ചരിത്രം</string>
+    <string name="nav_settings">ക്രമീകരണങ്ങൾ</string>
+    <string name="profile_prefix">പ്രൊഫൈൽ: %1$s</string>
+    <string name="toggle_theme">തീം മാറ്റുക</string>
+    <string name="switch_profile">പ്രൊഫൈൽ മാറ്റുക</string>
+
+    <!-- Today Tab -->
+    <string name="todays_medications">ഇന്നത്തെ മരുന്നുകൾ</string>
+    <string name="doses_scheduled_count">%1$d നിശ്ചയിച്ചിരിക്കുന്നു</string>
+    <string name="no_doses_today">ഇന്ന് കഴിക്കേണ്ട മരുന്നുകളൊന്നുമില്ല.</string>
+    <string name="adherence_score">കൃത്യതാ സ്കോർ</string>
+    <string name="stat_taken">കഴിച്ചു</string>
+    <string name="stat_missed">വിട്ടുപോയി</string>
+    <string name="stat_skipped">ഒഴിവാക്കി</string>
+    <string name="action_take">കഴിച്ചു</string>
+    <string name="action_skip">ഒഴിവാക്കുക</string>
+    <string name="status_taken_at">%1$s-ൽ കഴിച്ചു</string>
+    <string name="status_skipped_reason">ഒഴിവാക്കി: %1$s</string>
+    <string name="status_snoozed_count">%1$d തവണ സ്നൂസ് ചെയ്തു</string>
+    <string name="app_footer">PillRem നേറ്റീവ് ആൻഡ്രോയിഡ് • കോട്ട്ലിൻ &amp; കമ്പോസ് • റൂം ഡാറ്റാബേസ്</string>
+    <string name="update_available_title">പുതിയ അപ്ഡേറ്റ് ലഭ്യമാണ്: PillRem %1$s</string>
+    <string name="update_available_subtitle">വിവരങ്ങൾ കാണാനും ഇൻസ്റ്റാൾ ചെയ്യാനും അമർത്തുക</string>
+    <string name="btn_update">അപ്ഡേറ്റ് ചെയ്യുക</string>
+
+    <!-- Medicines Tab -->
+    <string name="tab_active">നിലവിലുള്ളവ (%1$d)</string>
+    <string name="tab_archived">ആർക്കൈവ് ചെയ്തവ (%1$d)</string>
+    <string name="no_active_medicines">നിലവിൽ മരുന്നുകളൊന്നുമില്ല. ചേർക്കാൻ + അമർത്തുക.</string>
+    <string name="no_archived_medicines">ആർക്കൈവ് ചെയ്ത മരുന്നുകളൊന്നുമില്ല.</string>
+    <string name="add_medicine">മരുന്ന് ചേർക്കുക</string>
+    <string name="action_archive">ആർക്കൈവ് ചെയ്യുക</string>
+    <string name="action_restore">പുനഃസ്ഥാപിക്കുക</string>
+    <string name="schedule_no_reminders">റിമൈൻഡർ സജ്ജീകരിച്ചിട്ടില്ല</string>
+    <string name="schedule_daily_at">ദിവസേന %1$s-ന്</string>
+    <string name="schedule_every_days_at">ഓരോ %1$d ദിവസത്തിലും %2$s-ന്</string>
+    <string name="schedule_weekly_at">%1$s ദിവസങ്ങളിൽ %2$s-ന്</string>
+    <string name="schedule_weekly_interval">ഓരോ %1$d ആഴ്ചയിലും (%2$s) %3$s-ന്</string>
+    <string name="schedule_monthly_at">മാസത്തിൽ ഒരിക്കൽ %1$s-ന്</string>
+    <string name="schedule_every_months_at">ഓരോ %1$d മാസത്തിലും %2$s-ന്</string>
+    <string name="schedule_as_needed">ആവശ്യമുള്ളപ്പോൾ</string>
+
+    <!-- Add/Edit Medicine Dialog -->
+    <string name="dialog_add_medicine_title">മരുന്ന് ചേർക്കുക</string>
+    <string name="med_name_label">മരുന്നിന്റെ പേര് *</string>
+    <string name="med_name_error">മരുന്നിന്റെ പേര് നൽകണം</string>
+    <string name="med_dosage_label">അളവ് (Dosage) *</string>
+    <string name="med_dosage_error">ശരിയായ അളവ് നൽകുക (> 0)</string>
+    <string name="med_unit_label">യൂണിറ്റ്</string>
+    <string name="med_form_label">രൂപം (Form)</string>
+    <string name="med_instructions_label">നിർദ്ദേശങ്ങൾ</string>
+    <string name="repeating_cadence">ആവർത്തന ക്രമം</string>
+    <string name="cadence_every">ഓരോ</string>
+    <string name="cadence_label">രീതി</string>
+    <string name="select_days_of_week">ആഴ്ചയിലെ ദിവസങ്ങൾ തിരഞ്ഞെടുക്കുക:</string>
+    <string name="dose_times_header">കഴിക്കേണ്ട സമയം (%1$d തവണ)</string>
+    <string name="add_another_dose_time">മറ്റൊരു സമയം ചേർക്കുക</string>
+    <string name="hour_label">മണിക്കൂർ</string>
+    <string name="min_label">മിനിറ്റ്</string>
+    <string name="btn_save">സേവ് ചെയ്യുക</string>
+    <string name="btn_cancel">റദ്ദാക്കുക</string>
+    <string name="error_interval_min">ഇടവേള കുറഞ്ഞത് 1 ആയിരിക്കണം</string>
+    <string name="error_at_least_one_dose">കുറഞ്ഞത് ഒരു സമയമെങ്കിലും നിശ്ചയിക്കണം</string>
+
+    <!-- History Tab -->
+    <string name="filter_all">എല്ലാം (%1$d)</string>
+    <string name="filter_taken">കഴിച്ചവ (%1$d)</string>
+    <string name="filter_missed">വിട്ടുപോയവ (%1$d)</string>
+    <string name="filter_skipped">ഒഴിവാക്കിയവ (%1$d)</string>
+    <string name="no_dose_records">രേഖകളൊന്നും കണ്ടെത്തിയില്ല.</string>
+    <string name="tap_to_mark_taken">കഴിച്ചതായി രേഖപ്പെടുത്താൻ അമർത്തുക</string>
+
+    <!-- Settings Tab -->
+    <string name="section_profiles">പ്രൊഫൈലുകൾ</string>
+    <string name="btn_add_profile">പുതിയ പ്രൊഫൈൽ ചേർക്കുക</string>
+    <string name="btn_switch">മാറുക</string>
+    <string name="section_language">ഭാഷ (Language)</string>
+    <string name="language_description">നിങ്ങൾക്കിഷ്ടമുള്ള ഭാഷ തിരഞ്ഞെടുക്കുക</string>
+    <string name="section_notifications">നോട്ടിഫിക്കേഷൻ ക്രമീകരണങ്ങൾ</string>
+    <string name="grace_period_title">ഗ്രേസ് പിരീഡ് (Grace Period)</string>
+    <string name="grace_period_desc">ഈ സമയപരിധിക്കുള്ളിൽ കഴിച്ചില്ലെങ്കിൽ ഡോസ് വിട്ടുപോയതായി അടയാളപ്പെടുത്തും.</string>
+    <string name="snooze_duration_title">സ്നൂസ് സമയം</string>
+    <string name="snooze_duration_desc">സ്നൂസ് ചെയ്യുമ്പോൾ ഗ്രേസ് പിരീഡ് മാറാതെ തന്നെ റിമൈൻഡർ നീട്ടിവെക്കുന്നു.</string>
+    <string name="minutes_format">%1$d മിനിറ്റ്</string>
+    <string name="section_permissions">അനുമതികൾ (Permissions)</string>
+    <string name="perm_notif_title">നോട്ടിഫിക്കേഷനുകൾ</string>
+    <string name="perm_notif_granted">ലഭ്യമാക്കി — അറിയിപ്പുകൾ കൃത്യമായി വരും</string>
+    <string name="perm_notif_denied">തടസ്സപ്പെട്ടു — റിമൈൻഡറുകൾ ലഭിക്കില്ല</string>
+    <string name="perm_exact_title">കൃത്യമായ അലാറം (Exact Alarms)</string>
+    <string name="perm_exact_allowed">അനുവദിച്ചു — നിശ്ചിത സമയത്തുതന്നെ അലാറം അടിക്കും</string>
+    <string name="perm_exact_denied">സിസ്റ്റം നിയന്ത്രിച്ചിരിക്കുന്നു</string>
+    <string name="perm_battery_title">ബാറ്ററി ഒപ്റ്റിമൈസേഷൻ ഒഴിവാക്കൽ</string>
+    <string name="perm_battery_unrestricted">നിയന്ത്രണങ്ങളില്ല — ഫോൺ സ്ലീപ്പിലായാലും അലാറം പ്രവർത്തിക്കും</string>
+    <string name="perm_battery_optimized">ഒപ്റ്റിമൈസ് ചെയ്തിരിക്കുന്നു (നിയന്ത്രണം മാറ്റുന്നത് ശുപാർശ ചെയ്യുന്നു)</string>
+    <string name="btn_fix">പരിഹരിക്കുക</string>
+    <string name="btn_allow">അനുവദിക്കുക</string>
+    <string name="btn_unrestrict">മാറ്റുക</string>
+    <string name="section_appearance">രൂപം (Appearance)</string>
+    <string name="dark_theme_title">ഡാർക്ക് തീം</string>
+    <string name="dark_theme_desc">കണ്ണുകൾക്ക് സുഖപ്രദമായ ഡാർക്ക് മോഡ്</string>
+    <string name="section_backup">ഡാറ്റ ബാക്കപ്പും പുനഃസ്ഥാപനവും</string>
+    <string name="backup_desc">PillRem 100% ഓഫ്‌ലൈനാണ്. നിങ്ങളുടെ ആരോഗ്യ വിവരങ്ങൾ സുരക്ഷിതമായി സൂക്ഷിക്കാനോ മറ്റൊരു ഫോണിലേക്ക് മാറ്റാനോ JSON ഫയലായി എക്സ്പോർട്ട് ചെയ്യാം.</string>
+    <string name="btn_export_json">JSON എക്സ്പോർട്ട്</string>
+    <string name="btn_import_json">JSON ഇമ്പോർട്ട്</string>
+    <string name="section_updates">ആപ്പ് അപ്ഡേറ്റുകൾ</string>
+    <string name="version_format">PillRem v%1$s</string>
+    <string name="build_format">ബിൽഡ് %1$d • GitHub റിലീസുകൾ</string>
+    <string name="updates_desc">ക്ലൗഡ് ട്രാക്കിംഗ് ഒന്നുമില്ലാതെ നേരിട്ട് GitHub-ൽ നിന്ന് പുതിയ പതിപ്പുകൾ അപ്ഡേറ്റ് ചെയ്യാം.</string>
+    <string name="btn_check_updates">അപ്ഡേറ്റ് പരിശോധിക്കുക</string>
+    <string name="checking_updates">പരിശോധിക്കുന്നു…</string>
+    <string name="offline_privacy_footer">PillRem • 100% ഓഫ്‌ലൈൻ &amp; സ്വകാര്യം • ട്രാക്കിംഗുകൾ ഇല്ല</string>
+
+    <!-- Onboarding Flow -->
+    <string name="onboarding_welcome_title">PillRem-ലേക്ക് സ്വാഗതം</string>
+    <string name="onboarding_welcome_desc">സുരക്ഷിതത്വവും സ്വകാര്യതയും ഉറപ്പാക്കുന്ന ക്ലിനിക്കൽ-ഗ്രേഡ് ഓഫ്‌ലൈൻ മരുന്ന് റിമൈൻഡർ ആപ്പ്.</string>
+    <string name="prop_offline_title">100% ഓഫ്‌ലൈൻ &amp; സ്വകാര്യം</string>
+    <string name="prop_offline_desc">ക്ലൗഡ് അക്കൗണ്ടുകളോ ഡാറ്റാ ട്രാക്കിംഗോ ഇല്ല. നിങ്ങളുടെ ആരോഗ്യ വിവരങ്ങൾ ഫോണിൽ മാത്രം സുരക്ഷിതമായിരിക്കുന്നു.</string>
+    <string name="prop_exact_title">കൃത്യസമയത്തുള്ള അലാറങ്ങൾ</string>
+    <string name="prop_exact_desc">ഫോൺ ലോക്ക് ആയിരിക്കുമ്പോഴും ഉറക്കത്തിലായിരിക്കുമ്പോഴും കൃത്യസമയത്ത് അലാറം മുഴങ്ങുന്നു.</string>
+    <string name="prop_adherence_title">കൃത്യമായ അനുസരണ സ്കോർ</string>
+    <string name="prop_adherence_desc">നിങ്ങൾ മരുന്ന് കൃത്യമായി കഴിക്കുന്നുണ്ടോ എന്ന് കൃത്യമായി കണക്കുകൂട്ടുന്നു.</string>
+    <string name="btn_get_started">ആരംഭിക്കുക</string>
+
+    <string name="step_permissions_title">ഘട്ടം 1: അനുമതികൾ</string>
+    <string name="step_permissions_headline">ആവശ്യമായ സിസ്റ്റം അനുമതികൾ നൽകുക</string>
+    <string name="step_permissions_desc">മരുന്ന് കഴിക്കേണ്ട സമയം തെറ്റാതിരിക്കാൻ ഫോൺ ലോക്കായിരിക്കുമ്പോഴും അലാറം പ്രവർത്തിക്കാനുള്ള അനുമതി ആവശ്യമാണ്.</string>
+    <string name="perm_card_notif_desc">ലോക്ക് സ്ക്രീനിൽ മരുന്ന് കഴിക്കാനും സ്നൂസ് ചെയ്യാനുമുള്ള ഓപ്ഷനുകൾ നൽകുന്നു.</string>
+    <string name="perm_card_exact_desc">കൃത്യമായ മിനിറ്റിൽ തന്നെ ഫോണിനെ ഉണർത്തുന്നു.</string>
+    <string name="perm_card_battery_desc">രാവിലെയോ രാത്രിയോ ഉള്ള പ്രധാന അലാറങ്ങൾ സിസ്റ്റം തടസ്സപ്പെടുത്താതെ സൂക്ഷിക്കുന്നു.</string>
+    <string name="btn_grant">നൽകുക</string>
+    <string name="btn_next_profile">അടുത്തത്: പ്രൊഫൈൽ</string>
+
+    <string name="step_profile_title">ഘട്ടം 2: പ്രൊഫൈൽ</string>
+    <string name="step_profile_headline">പ്രൊഫൈൽ ഉണ്ടാക്കുക</string>
+    <string name="step_profile_desc">ഒന്നിലധികം ആളുകൾക്ക് (ഉദാ: ഞാൻ, കുട്ടികൾ, മാതാപിതാക്കൾ) വെവ്വേറെ പ്രൊഫൈൽ ഉണ്ടാക്കാം.</string>
+    <string name="profile_name_hint">പേര് (ഉദാ: ഞാൻ, അച്ഛൻ) *</string>
+    <string name="profile_name_error">ദയവായി പേര് നൽകുക</string>
+    <string name="avatar_badge_color">ബാഡ്ജ് നിറം:</string>
+    <string name="clinical_timings">റിമൈൻഡർ സമയ ക്രമീകരണങ്ങൾ</string>
+    <string name="btn_next_medication">അടുത്തത്: ആദ്യ മരുന്ന്</string>
+
+    <string name="step_med_title">ഘട്ടം 3: ആദ്യ മരുന്ന്</string>
+    <string name="step_med_headline">ആദ്യത്തെ മരുന്ന് ചേർക്കുക</string>
+    <string name="step_med_desc">അലാറം സജ്ജീകരിക്കാൻ ഇപ്പോൾ തന്നെ മരുന്ന് ചേർക്കാം, അല്ലെങ്കിൽ പിന്നീട് എപ്പോൾ വേണമെങ്കിലും ചേർക്കാവുന്നതാണ്.</string>
+    <string name="med_name_optional">മരുന്നിന്റെ പേര് (നിർബന്ധമില്ല)</string>
+    <string name="btn_finish_setup">പൂർത്തിയാക്കുക</string>
+    <string name="btn_save_and_start">സേവ് ചെയ്ത് ആരംഭിക്കുക</string>
+    <string name="btn_skip_med_later">മരുന്നുകൾ പിന്നീട് ചേർക്കാം</string>
+
+    <!-- Dialogs -->
+    <string name="dialog_skip_title">മരുന്ന് ഒഴിവാക്കുക</string>
+    <string name="dialog_skip_question">%1$s (%2$s) ഇപ്പോൾ കഴിക്കുന്നത് ഒഴിവാക്കണമെന്ന് ഉറപ്പാണോ?</string>
+    <string name="dialog_skip_desc">ഒഴിവാക്കിയ ഡോസുകളെ അഡ്‌ഹീയറൻസ് സ്കോർ കണക്കുകൂട്ടലിൽ നിന്ന് ഒഴിവാക്കും.</string>
+    <string name="skip_reason_label">ഒഴിവാക്കാനുള്ള കാരണം (നിർബന്ധമില്ല):</string>
+    <string name="reason_fasting">പരിശോധനക്കായി ഭക്ഷണം കഴിക്കാതിരിക്കുന്നു</string>
+    <string name="reason_doctor">ഡോക്ടർ നിർത്താൻ നിർദ്ദേശിച്ചു</string>
+    <string name="reason_nausea">ഛർദ്ദി / അസ്വസ്ഥത തോന്നുന്നു</string>
+    <string name="reason_out_of_stock">മരുന്ന് തീർന്നുപോയി</string>
+    <string name="reason_other">മറ്റുള്ളവ</string>
+    <string name="specify_reason">കാരണം വ്യക്തമാക്കുക</string>
+    <string name="btn_confirm_skip">ഒഴിവാക്കുക</string>
+    <string name="dialog_correct_title">വിട്ടുപോയ ഡോസ് മാറ്റുക</string>
+    <string name="dialog_correct_question">നിങ്ങൾ %1$s (%2$s) നേരത്തെ കഴിച്ചിരുന്നോ?</string>
+    <string name="scheduled_for">നിശ്ചയിച്ച സമയം: %1$s</string>
+    <string name="dialog_correct_desc">ഇത് നില മാറ്റുകയും അഡ്‌ഹീയറൻസ് സ്കോർ ശരിയായി പുതുക്കുകയും ചെയ്യും.</string>
+    <string name="btn_mark_as_taken">കഴിച്ചതായി അടയാളപ്പെടുത്തുക</string>
+</resources>

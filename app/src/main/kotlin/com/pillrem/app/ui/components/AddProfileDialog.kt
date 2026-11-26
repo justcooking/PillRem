@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,8 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.pillrem.app.data.local.AppDatabase
 import kotlinx.coroutines.launch
 
@@ -40,7 +43,8 @@ fun AddProfileDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Profile") },
+        shape = RoundedCornerShape(14.dp),
+        title = { Text("Add Profile", fontWeight = FontWeight.SemiBold, fontSize = 16.sp) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
@@ -91,6 +95,8 @@ fun AddProfileDialog(
         },
         confirmButton = {
             Button(
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.height(36.dp),
                 onClick = {
                     if (name.isNotBlank()) {
                         coroutineScope.launch {
@@ -108,12 +114,16 @@ fun AddProfileDialog(
                     }
                 }
             ) {
-                Text("Create Profile")
+                Text("Create Profile", fontSize = 13.sp, fontWeight = FontWeight.Medium)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
+            TextButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.height(36.dp)
+            ) {
+                Text("Cancel", fontSize = 13.sp)
             }
         }
     )

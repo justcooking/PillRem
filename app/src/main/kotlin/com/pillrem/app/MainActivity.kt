@@ -1,8 +1,11 @@
 package com.pillrem.app
 
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,10 +20,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.platform.LocalContext
+import com.pillrem.app.R
 import com.pillrem.app.data.local.AppDatabase
 import com.pillrem.app.data.models.DoseWithMedicine
 import com.pillrem.app.data.update.UpdateManager
@@ -33,13 +39,20 @@ import com.pillrem.app.ui.components.UpdateDialog
 import com.pillrem.app.ui.navigation.NavItem
 import com.pillrem.app.ui.screens.HistoryScreen
 import com.pillrem.app.ui.screens.MedicinesScreen
+import com.pillrem.app.ui.screens.OnboardingScreen
 import com.pillrem.app.ui.screens.SettingsScreen
 import com.pillrem.app.ui.theme.*
+import com.pillrem.app.utils.LocaleHelper
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MainActivity : ComponentActivity() {
+
+    override fun attachBaseContext(newBase: Context) {
+        val language = LocaleHelper.getSavedLanguage(newBase)
+        super.attachBaseContext(LocaleHelper.createLocalizedContext(newBase, language))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,14 +62,41 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             var isDarkTheme by remember { mutableStateOf(false) }
+            val profiles by db.profileDao().getAllProfiles().collectAsState(initial = null)
 
             PillRemTheme(darkTheme = isDarkTheme) {
-                MainAppHost(
-                    db = db,
-                    doseEngine = doseEngine,
-                    isDarkTheme = isDarkTheme,
-                    onToggleTheme = { isDarkTheme = !isDarkTheme }
-                )
+                when {
+                    profiles == null -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.background),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = if (isDarkTheme) DarkPrimary else LightPrimary
+                            )
+                        }
+                    }
+                    profiles!!.isEmpty() -> {
+                        OnboardingScreen(
+                            db = db,
+                            doseEngine = doseEngine,
+                            isDarkTheme = isDarkTheme,
+                            onComplete = {
+                                // Flow emission from profile creation triggers transition to MainAppHost
+                            }
+                        )
+                    }
+                    else -> {
+                        MainAppHost(
+                            db = db,
+                            doseEngine = doseEngine,
+                            isDarkTheme = isDarkTheme,
+                            onToggleTheme = { isDarkTheme = !isDarkTheme }
+                        )
+                    }
+                }
             }
         }
     }
@@ -95,14 +135,14 @@ fun MainAppHost(
                 title = {
                     Column {
                         Text(
-                            "PillRem",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 20.sp,
+                            stringResource(R.string.app_name),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 18.sp,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         activeProfile?.let {
                             Text(
-                                "Profile: ${it.name}",
+                                stringResource(R.string.profile_prefix, it.name),
                                 fontSize = 12.sp,
                                 color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
                             )
@@ -113,13 +153,14 @@ fun MainAppHost(
                     IconButton(onClick = onToggleTheme) {
                         Icon(
                             imageVector = if (isDarkTheme) Icons.Default.LightMode else Icons.Default.DarkMode,
-                            contentDescription = "Toggle Theme"
+                            contentDescription = stringResource(R.string.toggle_theme),
+                            modifier = Modifier.size(20.dp)
                         )
                     }
 
                     Box {
                         IconButton(onClick = { showProfileMenu = true }) {
-                            Icon(Icons.Default.AccountCircle, contentDescription = "Switch Profile")
+                            Icon(Icons.Default.AccountCircle, contentDescription = stringResource(R.string.switch_profile), modifier = Modifier.size(22.dp))
                         }
 
                         DropdownMenu(
@@ -132,7 +173,7 @@ fun MainAppHost(
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             Box(
                                                 modifier = Modifier
-                                                    .size(24.dp)
+                                                    .size(20.dp)
                                                     .clip(CircleShape)
                                                     .background(Color(profile.avatarColor)),
                                                 contentAlignment = Alignment.Center
@@ -140,18 +181,18 @@ fun MainAppHost(
                                                 Text(
                                                     profile.name.take(1),
                                                     color = Color.White,
-                                                    fontSize = 12.sp,
+                                                    fontSize = 11.sp,
                                                     fontWeight = FontWeight.Bold
                                                 )
                                             }
                                             Spacer(Modifier.width(8.dp))
-                                            Text(profile.name)
+                                            Text(profile.name, fontSize = 14.sp)
                                             if (profile.isActive) {
                                                 Spacer(Modifier.width(8.dp))
                                                 Icon(
                                                     Icons.Default.Check,
                                                     contentDescription = "Active",
-                                                    tint = LightPrimary,
+                                                    tint = if (isDarkTheme) DarkPrimary else LightPrimary,
                                                     modifier = Modifier.size(16.dp)
                                                 )
                                             }
@@ -180,14 +221,14 @@ fun MainAppHost(
             ) {
                 NavItem.entries.forEach { item ->
                     NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.title) },
-                        label = { Text(item.title) },
+                        icon = { Icon(item.icon, contentDescription = stringResource(item.titleRes), modifier = Modifier.size(20.dp)) },
+                        label = { Text(stringResource(item.titleRes), fontSize = 11.sp, fontWeight = FontWeight.Medium) },
                         selected = currentNav == item,
                         onClick = { currentNav = item },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = activeColor,
                             selectedTextColor = activeColor,
-                            indicatorColor = activeColor.copy(alpha = 0.15f)
+                            indicatorColor = activeColor.copy(alpha = 0.12f)
                         )
                     )
                 }
@@ -295,8 +336,9 @@ fun TodayTabContent(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
-                        containerColor = if (isDarkTheme) MaterialTheme.colorScheme.primaryContainer else Color(0xFFE3F2FD)
+                        containerColor = if (isDarkTheme) DarkSurface else LightSurface
                     ),
+                    border = BorderStroke(1.dp, if (isDarkTheme) DarkBorder else LightBorder),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Row(
@@ -308,31 +350,33 @@ fun TodayTabContent(
                         Icon(
                             Icons.Default.SystemUpdate,
                             contentDescription = null,
-                            tint = if (isDarkTheme) DarkPrimary else LightPrimary
+                            tint = if (isDarkTheme) DarkPrimary else LightPrimary,
+                            modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                "Update Available: PillRem ${updateState.releaseInfo.tagName}",
-                                fontWeight = FontWeight.Bold,
+                                stringResource(R.string.update_available_title, updateState.releaseInfo.tagName),
+                                fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
-                                "Tap to review changelog & install",
+                                stringResource(R.string.update_available_subtitle),
                                 fontSize = 12.sp,
                                 color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
                             )
                         }
                         Button(
                             onClick = onShowUpdate,
-                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                            modifier = Modifier.height(32.dp),
                             shape = RoundedCornerShape(8.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (isDarkTheme) DarkPrimary else LightPrimary
                             )
                         ) {
-                            Text("Update", fontSize = 12.sp)
+                            Text(stringResource(R.string.btn_update), fontSize = 12.sp, color = if (isDarkTheme) DarkBackground else Color.White)
                         }
                     }
                 }
@@ -354,14 +398,14 @@ fun TodayTabContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Today's Medication Doses",
-                    fontSize = 17.sp,
-                    fontWeight = FontWeight.Bold,
+                    stringResource(R.string.todays_medications),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    "${doses.size} scheduled",
-                    fontSize = 13.sp,
+                    stringResource(R.string.doses_scheduled_count, doses.size),
+                    fontSize = 12.sp,
                     color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
                 )
             }
@@ -372,16 +416,18 @@ fun TodayTabContent(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    shape = RoundedCornerShape(16.dp)
+                    border = BorderStroke(1.dp, if (isDarkTheme) DarkBorder else LightBorder),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(32.dp),
+                            .padding(28.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            "No doses scheduled for today.",
+                            stringResource(R.string.no_doses_today),
+                            fontSize = 13.sp,
                             color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
                         )
                     }
@@ -403,14 +449,6 @@ fun TodayTabContent(
         }
 
         item {
-            Spacer(Modifier.height(8.dp))
-            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                Text(
-                    "PillRem Native Android • Kotlin & Compose • SQLite Room",
-                    fontSize = 11.sp,
-                    color = if (isDarkTheme) DarkTextSecondary else LightTextSecondary
-                )
-            }
             Spacer(Modifier.height(16.dp))
         }
     }
@@ -431,44 +469,43 @@ fun AdherenceBanner(stats: com.pillrem.app.domain.AdherenceStats, isDark: Boolea
     val dangerColor = if (isDark) DarkDanger else LightDanger
     val neutralColor = if (isDark) DarkNeutral else LightNeutral
     val warningColor = if (isDark) DarkWarning else LightWarning
+    val borderColor = if (isDark) DarkBorder else LightBorder
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(16.dp)
+        border = BorderStroke(1.dp, borderColor),
+        shape = RoundedCornerShape(12.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Adherence Score", fontWeight = FontWeight.SemiBold, fontSize = 15.sp)
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                            (if (stats.adherenceRate >= 80f) successColor else warningColor).copy(alpha = 0.15f)
-                        )
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                ) {
-                    Text(
-                        "${stats.adherenceRate.toInt()}%",
-                        fontWeight = FontWeight.Bold,
-                        color = if (stats.adherenceRate >= 80f) successColor else warningColor
-                    )
-                }
+                Text(
+                    stringResource(R.string.adherence_score),
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    "${stats.adherenceRate.toInt()}%",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 18.sp,
+                    color = if (stats.adherenceRate >= 80f) successColor else warningColor
+                )
             }
 
-            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(color = borderColor, thickness = 1.dp)
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                StatColumn(label = "Taken", count = stats.takenCount.toString(), color = successColor)
-                StatColumn(label = "Missed", count = stats.missedCount.toString(), color = dangerColor)
-                StatColumn(label = "Skipped", count = stats.skippedCount.toString(), color = neutralColor)
+                StatColumn(label = stringResource(R.string.stat_taken), count = stats.takenCount.toString(), color = successColor)
+                StatColumn(label = stringResource(R.string.stat_missed), count = stats.missedCount.toString(), color = dangerColor)
+                StatColumn(label = stringResource(R.string.stat_skipped), count = stats.skippedCount.toString(), color = neutralColor)
             }
         }
     }
@@ -476,9 +513,9 @@ fun AdherenceBanner(stats: com.pillrem.app.domain.AdherenceStats, isDark: Boolea
 
 @Composable
 fun StatColumn(label: String, count: String, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(count, fontWeight = FontWeight.Bold, fontSize = 18.sp, color = color)
-        Text(label, fontSize = 12.sp, color = Color.Gray)
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(count, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = color)
+        Text(label, fontSize = 11.sp, color = Color.Gray)
     }
 }
 
@@ -504,68 +541,64 @@ fun DoseCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        shape = RoundedCornerShape(16.dp)
+        border = BorderStroke(1.dp, if (isDark) DarkBorder else LightBorder),
+        shape = RoundedCornerShape(12.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(14.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                // Quiet status dot instead of colored circular wash
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
+                        .size(8.dp)
                         .clip(CircleShape)
-                        .background(statusColor.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        Icons.Default.Medication,
-                        contentDescription = null,
-                        tint = statusColor,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+                        .background(statusColor)
+                )
 
-                Spacer(Modifier.width(12.dp))
+                Spacer(Modifier.width(10.dp))
 
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(med.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     Text(
-                        "${com.pillrem.app.utils.DosageFormatter.formatWithUnit(med.dosageAmount, med.dosageUnit)} • ${med.instructions ?: ""}",
+                        med.name,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        "${com.pillrem.app.utils.DosageFormatter.formatWithUnit(med.dosageAmount, med.dosageUnit)}${if (!med.instructions.isNullOrBlank()) " • " + med.instructions else ""}",
                         fontSize = 13.sp,
                         color = if (isDark) DarkTextSecondary else LightTextSecondary
                     )
                 }
 
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(timeStr, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                    Text(
-                        "Stock: ${med.stockCount}",
-                        fontSize = 11.sp,
-                        color = if (med.stockCount <= 7) LightWarning else Color.Gray
-                    )
-                }
+                Text(
+                    timeStr,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(10.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(statusColor.copy(alpha = 0.12f))
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        dose.status.uppercase(),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = statusColor
-                    )
+                val statusText = when (dose.status) {
+                    "taken" -> stringResource(R.string.stat_taken)
+                    "missed" -> stringResource(R.string.stat_missed)
+                    "skipped" -> stringResource(R.string.stat_skipped)
+                    else -> "Pending"
                 }
 
+                Text(
+                    statusText,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = statusColor
+                )
+
                 if (dose.snoozeCount > 0) {
-                    Spacer(Modifier.width(8.dp))
                     Text(
-                        "Snoozed ${dose.snoozeCount}x",
-                        fontSize = 11.sp,
+                        " • ${stringResource(R.string.status_snoozed_count, dose.snoozeCount)}",
+                        fontSize = 12.sp,
                         color = LightWarning
                     )
                 }
@@ -573,31 +606,47 @@ fun DoseCard(
                 Spacer(Modifier.weight(1f))
 
                 if (dose.status != "taken" && dose.status != "skipped") {
-                    TextButton(onClick = onSkip) {
-                        Text("Skip", fontSize = 13.sp)
+                    TextButton(
+                        onClick = onSkip,
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 0.dp),
+                        modifier = Modifier.height(32.dp)
+                    ) {
+                        Text(
+                            stringResource(R.string.action_skip),
+                            fontSize = 12.sp,
+                            color = if (isDark) DarkTextSecondary else LightTextSecondary
+                        )
                     }
+                    Spacer(Modifier.width(4.dp))
                     Button(
                         onClick = onTake,
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 0.dp),
+                        modifier = Modifier.height(32.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = if (isDark) DarkPrimary else LightPrimary
-                        ),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
+                        )
                     ) {
-                        Text("Take", fontSize = 13.sp)
+                        Text(
+                            stringResource(R.string.action_take),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = if (isDark) DarkBackground else Color.White
+                        )
                     }
                 } else if (dose.status == "taken") {
                     val takenStr = dose.takenAt?.let { timeFormat.format(Date(it)) } ?: ""
                     Text(
-                        "Taken at $takenStr",
+                        stringResource(R.string.status_taken_at, takenStr),
                         fontSize = 12.sp,
                         color = if (isDark) DarkSuccess else LightSuccess,
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Normal
                     )
                 } else if (dose.status == "skipped") {
                     Text(
-                        "Skipped: ${dose.skipReason ?: "Confirmed"}",
+                        stringResource(R.string.status_skipped_reason, dose.skipReason ?: ""),
                         fontSize = 12.sp,
-                        color = Color.Gray
+                        color = if (isDark) DarkNeutral else LightNeutral
                     )
                 }
             }

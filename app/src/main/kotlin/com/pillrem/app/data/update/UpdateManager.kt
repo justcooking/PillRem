@@ -100,7 +100,7 @@ class UpdateManager(private val context: Context) {
     }
 
     suspend fun downloadAndPrepareUpdate(releaseInfo: ReleaseInfo) = withContext(Dispatchers.IO) {
-        val updatesDir = File(context.cacheDir, "updates")
+        val updatesDir = File(context.getExternalFilesDir(null) ?: context.filesDir, "updates")
         if (!updatesDir.exists()) {
             updatesDir.mkdirs()
         }
@@ -184,7 +184,26 @@ class UpdateManager(private val context: Context) {
             val installIntent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(apkUri, "application/vnd.android.package-archive")
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            // Explicitly grant read permission to all potential installer handlers
+            val resolveInfoList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.packageManager.queryIntentActivities(
+                    installIntent,
+                    android.content.pm.PackageManager.ResolveInfoFlags.of(0)
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                context.packageManager.queryIntentActivities(installIntent, 0)
+            }
+
+            for (resolveInfo in resolveInfoList) {
+                val targetPkg = resolveInfo.activityInfo?.packageName
+                if (!targetPkg.isNullOrEmpty()) {
+                    context.grantUriPermission(targetPkg, apkUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
             }
 
             context.startActivity(installIntent)

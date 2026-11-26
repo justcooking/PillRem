@@ -131,7 +131,14 @@ class DoseEngine(
         startDate: LocalDate
     ): Boolean {
         return when (ScheduleType.fromString(schedule.scheduleType)) {
-            ScheduleType.DAILY -> true
+            ScheduleType.DAILY -> {
+                val interval = schedule.intervalDays ?: 1
+                if (interval <= 1) true
+                else {
+                    val daysDiff = ChronoUnit.DAYS.between(startDate, targetDate)
+                    daysDiff >= 0 && (daysDiff % interval == 0L)
+                }
+            }
             ScheduleType.SPECIFIC_DAYS -> {
                 if (schedule.daysOfWeek.isNullOrBlank()) return false
                 val days = schedule.daysOfWeek.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
@@ -143,6 +150,24 @@ class DoseEngine(
                 if (interval <= 1) return true
                 val daysDiff = ChronoUnit.DAYS.between(startDate, targetDate)
                 daysDiff >= 0 && (daysDiff % interval == 0L)
+            }
+            ScheduleType.WEEKLY -> {
+                val intervalWeeks = schedule.intervalDays ?: 1
+                val weeksDiff = ChronoUnit.WEEKS.between(startDate, targetDate)
+                if (weeksDiff < 0 || (weeksDiff % intervalWeeks != 0L)) return false
+                if (!schedule.daysOfWeek.isNullOrBlank()) {
+                    val days = schedule.daysOfWeek.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
+                    days.contains(targetDate.dayOfWeek.value)
+                } else {
+                    targetDate.dayOfWeek == startDate.dayOfWeek
+                }
+            }
+            ScheduleType.MONTHLY -> {
+                val intervalMonths = schedule.intervalDays ?: 1
+                val monthsDiff = ChronoUnit.MONTHS.between(startDate.withDayOfMonth(1), targetDate.withDayOfMonth(1))
+                if (monthsDiff < 0 || (monthsDiff % intervalMonths != 0L)) return false
+                val targetDayOfMonth = startDate.dayOfMonth.coerceAtMost(targetDate.lengthOfMonth())
+                targetDate.dayOfMonth == targetDayOfMonth
             }
             ScheduleType.AS_NEEDED -> false
         }
@@ -164,10 +189,6 @@ class DoseEngine(
                 status = DoseStatus.TAKEN.value,
                 takenAt = takenAt
             )
-
-            if (doseWithMed.medicine.stockCount > 0) {
-                db.medicineDao().decrementStock(doseWithMed.medicine.id, 1)
-            }
             true
         }
     }
@@ -248,10 +269,6 @@ class DoseEngine(
                 status = DoseStatus.TAKEN.value,
                 takenAt = confirmedTime
             )
-
-            if (doseWithMed.medicine.stockCount > 0) {
-                db.medicineDao().decrementStock(doseWithMed.medicine.id, 1)
-            }
             true
         }
     }

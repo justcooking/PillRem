@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,8 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pillrem.app.services.PermissionHelper
-import com.pillrem.app.ui.theme.DarkWarning
-import com.pillrem.app.ui.theme.LightWarning
+import com.pillrem.app.ui.theme.*
 
 @Composable
 fun PermissionBanner(
@@ -32,6 +32,7 @@ fun PermissionBanner(
     var canExactAlarm by remember { mutableStateOf(PermissionHelper.canScheduleExactAlarms(context)) }
 
     val warningColor = if (isDark) DarkWarning else LightWarning
+    val borderColor = if (isDark) DarkBorder else LightBorder
 
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -40,7 +41,6 @@ fun PermissionBanner(
         onPermissionChanged()
     }
 
-    // Refresh state when composable recomposes
     LaunchedEffect(Unit) {
         hasNotifPermission = PermissionHelper.hasNotificationPermission(context)
         canExactAlarm = PermissionHelper.canScheduleExactAlarms(context)
@@ -49,8 +49,9 @@ fun PermissionBanner(
     if (!hasNotifPermission) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = warningColor.copy(alpha = 0.12f)),
-            shape = RoundedCornerShape(14.dp)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, borderColor),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Row(
                 modifier = Modifier.padding(14.dp),
@@ -60,20 +61,20 @@ fun PermissionBanner(
                     Icons.Default.NotificationsActive,
                     contentDescription = null,
                     tint = warningColor,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 Spacer(Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         "Notification Permission Needed",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         "Enable notifications so PillRem can alert you when doses are due.",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (isDark) DarkTextSecondary else LightTextSecondary
                     )
                 }
                 Spacer(Modifier.width(8.dp))
@@ -85,18 +86,24 @@ fun PermissionBanner(
                             PermissionHelper.openAppNotificationSettings(context)
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = warningColor),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    modifier = Modifier.height(32.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isDark) DarkRaised else LightRaised,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
                 ) {
-                    Text("Enable", fontSize = 12.sp)
+                    Text("Enable", fontSize = 12.sp, fontWeight = FontWeight.Medium)
                 }
             }
         }
     } else if (!canExactAlarm) {
         Card(
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = warningColor.copy(alpha = 0.12f)),
-            shape = RoundedCornerShape(14.dp)
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, borderColor),
+            shape = RoundedCornerShape(12.dp)
         ) {
             Row(
                 modifier = Modifier.padding(14.dp),
@@ -106,29 +113,34 @@ fun PermissionBanner(
                     Icons.Default.Alarm,
                     contentDescription = null,
                     tint = warningColor,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 Spacer(Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         "Exact Alarms Restricted",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 13.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         "Allow exact alarms in Android settings to ensure on-time medication alerts.",
                         fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = if (isDark) DarkTextSecondary else LightTextSecondary
                     )
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
                     onClick = { PermissionHelper.openExactAlarmSettings(context) },
-                    colors = ButtonDefaults.buttonColors(containerColor = warningColor),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                    modifier = Modifier.height(32.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isDark) DarkRaised else LightRaised,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
                 ) {
-                    Text("Allow", fontSize = 12.sp)
+                    Text("Allow", fontSize = 12.sp, fontWeight = FontWeight.Medium)
                 }
             }
         }
